@@ -1,0 +1,533 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="dieuxe1Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Dim_Time">
+          <Key>
+            <PropertyRef Name="Order_Date" />
+          </Key>
+          <Property Name="Order_Date" Type="datetime" Nullable="false" />
+          <Property Name="Order_Month" Type="int" />
+          <Property Name="Order_Year" Type="int" />
+          <Property Name="Order_Quarter" Type="int" />
+        </EntityType>
+        <EntityType Name="tblChiTietChuyenDi">
+          <Key>
+            <PropertyRef Name="MaDieuXe" />
+            <PropertyRef Name="DangKyLichChiTietId" />
+          </Key>
+          <Property Name="MaDieuXe" Type="int" Nullable="false" />
+          <Property Name="DangKyLichChiTietId" Type="int" Nullable="false" />
+          <Property Name="GioDi" Type="time" Precision="7" />
+        </EntityType>
+        <EntityType Name="tblDangKylich">
+          <Key>
+            <PropertyRef Name="DangKyLichId" />
+          </Key>
+          <Property Name="DangKyLichId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NgayDangky" Type="datetime" />
+          <Property Name="LienHeId" Type="int" />
+          <Property Name="NguoiTao" Type="int" />
+          <Property Name="NgayCapNhat" Type="datetime" />
+          <Property Name="NguoiCapnhat" Type="int" />
+          <Property Name="SoNguoiDi" Type="int" />
+        </EntityType>
+        <EntityType Name="tblDangKyLichChiTiet">
+          <Key>
+            <PropertyRef Name="DangKyLichChiTietId" />
+          </Key>
+          <Property Name="DangKyLichChiTietId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DangKyLichId" Type="int" />
+          <Property Name="TenNguoiDi" Type="nvarchar(max)" />
+          <Property Name="ThoiGianDen" Type="datetime" />
+          <Property Name="ThoiGianVe" Type="datetime" />
+          <Property Name="NgayDen" Type="date" />
+          <Property Name="GioDen" Type="time" Precision="7" />
+          <Property Name="NgayVe" Type="date" />
+          <Property Name="GioVe" Type="time" Precision="7" />
+          <Property Name="NoiDi" Type="nvarchar(max)" />
+          <Property Name="NoiDen" Type="nvarchar(max)" />
+          <Property Name="Ghichu" Type="text" />
+          <Property Name="NgayDangKy" Type="datetime" />
+          <Property Name="NguoiTao" Type="int" />
+          <Property Name="NgayCapNhat" Type="datetime" />
+          <Property Name="NguoiCapnhat" Type="int" />
+          <Property Name="SoNguoi" Type="int" />
+          <Property Name="ToaDoDi" Type="nvarchar(max)" />
+          <Property Name="ToaDoDen" Type="nvarchar(max)" />
+          <Property Name="SdtLienLac" Type="nvarchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="tblDieuXe">
+          <Key>
+            <PropertyRef Name="MaDieuxe" />
+          </Key>
+          <Property Name="MaDieuxe" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NoiDi" Type="nvarchar" MaxLength="255" />
+          <Property Name="NoiDen" Type="nvarchar" MaxLength="255" />
+          <Property Name="GioDi" Type="time" Precision="7" />
+          <Property Name="GioVe" Type="time" Precision="7" />
+          <Property Name="TaiXe" Type="int" />
+          <Property Name="TrangThai" Type="int" />
+          <Property Name="TuyenDuongDi" Type="text" />
+          <Property Name="TuyenDuongVe" Type="text" />
+          <Property Name="GhiChu" Type="text" />
+          <Property Name="BienKiemSoat" Type="nvarchar" MaxLength="10" />
+          <Property Name="ChiPhi" Type="money" />
+          <Property Name="NgayDangKy" Type="datetime" />
+          <Property Name="NguoiTao" Type="int" />
+          <Property Name="NgayCapNhat" Type="datetime" />
+          <Property Name="NguoiCapnhat" Type="int" />
+          <Property Name="NgayDi" Type="date" />
+          <Property Name="SoNguoi" Type="int" />
+          <Property Name="DsDiemDung" Type="text" />
+        </EntityType>
+        <EntityType Name="tblLienHe">
+          <Key>
+            <PropertyRef Name="LienHeID" />
+          </Key>
+          <Property Name="LienHeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TenLienHe" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="LoailienHe" Type="int" />
+          <Property Name="SdtLienLac" Type="nvarchar" MaxLength="20" />
+          <Property Name="BoPhan" Type="nvarchar" MaxLength="100" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" />
+          <Property Name="NgayDangKy" Type="datetime" />
+          <Property Name="NguoiTao" Type="int" />
+          <Property Name="NgayCapNhat" Type="datetime" />
+          <Property Name="NguoiCapnhat" Type="int" />
+        </EntityType>
+        <EntityType Name="tblLoaiLienHe">
+          <Key>
+            <PropertyRef Name="LoaiLienHe" />
+          </Key>
+          <Property Name="LoaiLienHe" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TenLoaiLienHe" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="NgayDangKy" Type="datetime" />
+          <Property Name="NguoiTao" Type="int" />
+          <Property Name="NgayCapNhat" Type="datetime" />
+          <Property Name="NguoiCapnhat" Type="int" />
+        </EntityType>
+        <EntityType Name="tblLoaiXe">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SoChoNgoi" Type="int" Nullable="false" />
+          <Property Name="NgayDangKy" Type="datetime" />
+          <Property Name="NguoiTao" Type="int" />
+          <Property Name="NgayCapNhat" Type="datetime" />
+          <Property Name="NguoiCapnhat" Type="int" />
+        </EntityType>
+        <EntityType Name="tblNguoiDung">
+          <Key>
+            <PropertyRef Name="NguoiDungID" />
+          </Key>
+          <Property Name="NguoiDungID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="MatKhau" Type="varchar" MaxLength="100" />
+          <Property Name="LienHeId" Type="int" />
+          <Property Name="NgayDangKy" Type="datetime" />
+          <Property Name="NguoiTao" Type="int" />
+          <Property Name="NgayCapNhat" Type="datetime" />
+          <Property Name="NguoiCapnhat" Type="int" />
+        </EntityType>
+        <EntityType Name="tblSearch">
+          <Key>
+            <PropertyRef Name="LienHeId" />
+            <PropertyRef Name="diadiem" />
+          </Key>
+          <Property Name="LienHeId" Type="int" Nullable="false" />
+          <Property Name="diadiem" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="NgayLuu" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblXe">
+          <Key>
+            <PropertyRef Name="BienSoXe" />
+          </Key>
+          <Property Name="BienSoXe" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="MaLoai" Type="int" Nullable="false" />
+          <Property Name="MauXe" Type="nvarchar" MaxLength="100" />
+          <Property Name="NgayDangKy" Type="datetime" />
+          <Property Name="NguoiTao" Type="int" />
+          <Property Name="NgayCapNhat" Type="datetime" />
+          <Property Name="NguoiCapnhat" Type="int" />
+          <Property Name="TrangThai" Type="int" />
+        </EntityType>
+        <Function Name="createTableDim_Time" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <EntityContainer Name="dieuxe1ModelStoreContainer">
+          <EntitySet Name="Dim_Time" EntityType="Self.Dim_Time" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblChiTietChuyenDi" EntityType="Self.tblChiTietChuyenDi" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblDangKylich" EntityType="Self.tblDangKylich" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblDangKyLichChiTiet" EntityType="Self.tblDangKyLichChiTiet" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblDieuXe" EntityType="Self.tblDieuXe" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblLienHe" EntityType="Self.tblLienHe" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblLoaiLienHe" EntityType="Self.tblLoaiLienHe" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblLoaiXe" EntityType="Self.tblLoaiXe" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblNguoiDung" EntityType="Self.tblNguoiDung" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblSearch" EntityType="Self.tblSearch" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblXe" EntityType="Self.tblXe" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="dieuxe1Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Dim_Time">
+          <Key>
+            <PropertyRef Name="Order_Date" />
+          </Key>
+          <Property Name="Order_Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Order_Month" Type="Int32" />
+          <Property Name="Order_Year" Type="Int32" />
+          <Property Name="Order_Quarter" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tblChiTietChuyenDi">
+          <Key>
+            <PropertyRef Name="MaDieuXe" />
+            <PropertyRef Name="DangKyLichChiTietId" />
+          </Key>
+          <Property Name="MaDieuXe" Type="Int32" Nullable="false" />
+          <Property Name="DangKyLichChiTietId" Type="Int32" Nullable="false" />
+          <Property Name="GioDi" Type="Time" Precision="7" />
+        </EntityType>
+        <EntityType Name="tblDangKylich">
+          <Key>
+            <PropertyRef Name="DangKyLichId" />
+          </Key>
+          <Property Name="DangKyLichId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NgayDangky" Type="DateTime" Precision="3" />
+          <Property Name="LienHeId" Type="Int32" />
+          <Property Name="NguoiTao" Type="Int32" />
+          <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+          <Property Name="NguoiCapnhat" Type="Int32" />
+          <Property Name="SoNguoiDi" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tblDangKyLichChiTiet">
+          <Key>
+            <PropertyRef Name="DangKyLichChiTietId" />
+          </Key>
+          <Property Name="DangKyLichChiTietId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DangKyLichId" Type="Int32" />
+          <Property Name="TenNguoiDi" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ThoiGianDen" Type="DateTime" Precision="3" />
+          <Property Name="ThoiGianVe" Type="DateTime" Precision="3" />
+          <Property Name="NgayDen" Type="DateTime" Precision="0" />
+          <Property Name="GioDen" Type="Time" Precision="7" />
+          <Property Name="NgayVe" Type="DateTime" Precision="0" />
+          <Property Name="GioVe" Type="Time" Precision="7" />
+          <Property Name="NoiDi" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="NoiDen" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Ghichu" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+          <Property Name="NguoiTao" Type="Int32" />
+          <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+          <Property Name="NguoiCapnhat" Type="Int32" />
+          <Property Name="SoNguoi" Type="Int32" />
+          <Property Name="ToaDoDi" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ToaDoDen" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SdtLienLac" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="tblDieuXe">
+          <Key>
+            <PropertyRef Name="MaDieuxe" />
+          </Key>
+          <Property Name="MaDieuxe" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NoiDi" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="NoiDen" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="GioDi" Type="Time" Precision="7" />
+          <Property Name="GioVe" Type="Time" Precision="7" />
+          <Property Name="TaiXe" Type="Int32" />
+          <Property Name="TrangThai" Type="Int32" />
+          <Property Name="TuyenDuongDi" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="TuyenDuongVe" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="GhiChu" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="BienKiemSoat" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="ChiPhi" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+          <Property Name="NguoiTao" Type="Int32" />
+          <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+          <Property Name="NguoiCapnhat" Type="Int32" />
+          <Property Name="NgayDi" Type="DateTime" Precision="0" />
+          <Property Name="SoNguoi" Type="Int32" />
+          <Property Name="DsDiemDung" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="tblLienHe">
+          <Key>
+            <PropertyRef Name="LienHeID" />
+          </Key>
+          <Property Name="LienHeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TenLienHe" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LoailienHe" Type="Int32" />
+          <Property Name="SdtLienLac" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="BoPhan" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+          <Property Name="NguoiTao" Type="Int32" />
+          <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+          <Property Name="NguoiCapnhat" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tblLoaiLienHe">
+          <Key>
+            <PropertyRef Name="LoaiLienHe" />
+          </Key>
+          <Property Name="LoaiLienHe" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TenLoaiLienHe" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+          <Property Name="NguoiTao" Type="Int32" />
+          <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+          <Property Name="NguoiCapnhat" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tblLoaiXe">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SoChoNgoi" Type="Int32" Nullable="false" />
+          <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+          <Property Name="NguoiTao" Type="Int32" />
+          <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+          <Property Name="NguoiCapnhat" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tblNguoiDung">
+          <Key>
+            <PropertyRef Name="NguoiDungID" />
+          </Key>
+          <Property Name="NguoiDungID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="MatKhau" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="LienHeId" Type="Int32" />
+          <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+          <Property Name="NguoiTao" Type="Int32" />
+          <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+          <Property Name="NguoiCapnhat" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tblSearch">
+          <Key>
+            <PropertyRef Name="LienHeId" />
+            <PropertyRef Name="diadiem" />
+          </Key>
+          <Property Name="LienHeId" Type="Int32" Nullable="false" />
+          <Property Name="diadiem" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NgayLuu" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="tblXe">
+          <Key>
+            <PropertyRef Name="BienSoXe" />
+          </Key>
+          <Property Name="BienSoXe" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MaLoai" Type="Int32" Nullable="false" />
+          <Property Name="MauXe" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+          <Property Name="NguoiTao" Type="Int32" />
+          <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+          <Property Name="NguoiCapnhat" Type="Int32" />
+          <Property Name="TrangThai" Type="Int32" />
+        </EntityType>
+        <EntityContainer Name="dieuxe1Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Dim_Time" EntityType="Self.Dim_Time" />
+          <EntitySet Name="tblChiTietChuyenDis" EntityType="Self.tblChiTietChuyenDi" />
+          <EntitySet Name="tblDangKyliches" EntityType="Self.tblDangKylich" />
+          <EntitySet Name="tblDangKyLichChiTiets" EntityType="Self.tblDangKyLichChiTiet" />
+          <EntitySet Name="tblDieuXes" EntityType="Self.tblDieuXe" />
+          <EntitySet Name="tblLienHes" EntityType="Self.tblLienHe" />
+          <EntitySet Name="tblLoaiLienHes" EntityType="Self.tblLoaiLienHe" />
+          <EntitySet Name="tblLoaiXes" EntityType="Self.tblLoaiXe" />
+          <EntitySet Name="tblNguoiDungs" EntityType="Self.tblNguoiDung" />
+          <EntitySet Name="tblSearches" EntityType="Self.tblSearch" />
+          <EntitySet Name="tblXes" EntityType="Self.tblXe" />
+          <FunctionImport Name="createTableDim_Time" />
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="dieuxe1ModelStoreContainer" CdmEntityContainer="dieuxe1Entities">
+          <EntitySetMapping Name="Dim_Time">
+            <EntityTypeMapping TypeName="dieuxe1Model.Dim_Time">
+              <MappingFragment StoreEntitySet="Dim_Time">
+                <ScalarProperty Name="Order_Date" ColumnName="Order_Date" />
+                <ScalarProperty Name="Order_Month" ColumnName="Order_Month" />
+                <ScalarProperty Name="Order_Year" ColumnName="Order_Year" />
+                <ScalarProperty Name="Order_Quarter" ColumnName="Order_Quarter" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblChiTietChuyenDis">
+            <EntityTypeMapping TypeName="dieuxe1Model.tblChiTietChuyenDi">
+              <MappingFragment StoreEntitySet="tblChiTietChuyenDi">
+                <ScalarProperty Name="MaDieuXe" ColumnName="MaDieuXe" />
+                <ScalarProperty Name="DangKyLichChiTietId" ColumnName="DangKyLichChiTietId" />
+                <ScalarProperty Name="GioDi" ColumnName="GioDi" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblDangKyliches">
+            <EntityTypeMapping TypeName="dieuxe1Model.tblDangKylich">
+              <MappingFragment StoreEntitySet="tblDangKylich">
+                <ScalarProperty Name="DangKyLichId" ColumnName="DangKyLichId" />
+                <ScalarProperty Name="NgayDangky" ColumnName="NgayDangky" />
+                <ScalarProperty Name="LienHeId" ColumnName="LienHeId" />
+                <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+                <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+                <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+                <ScalarProperty Name="SoNguoiDi" ColumnName="SoNguoiDi" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblDangKyLichChiTiets">
+            <EntityTypeMapping TypeName="dieuxe1Model.tblDangKyLichChiTiet">
+              <MappingFragment StoreEntitySet="tblDangKyLichChiTiet">
+                <ScalarProperty Name="DangKyLichChiTietId" ColumnName="DangKyLichChiTietId" />
+                <ScalarProperty Name="DangKyLichId" ColumnName="DangKyLichId" />
+                <ScalarProperty Name="TenNguoiDi" ColumnName="TenNguoiDi" />
+                <ScalarProperty Name="ThoiGianDen" ColumnName="ThoiGianDen" />
+                <ScalarProperty Name="ThoiGianVe" ColumnName="ThoiGianVe" />
+                <ScalarProperty Name="NgayDen" ColumnName="NgayDen" />
+                <ScalarProperty Name="GioDen" ColumnName="GioDen" />
+                <ScalarProperty Name="NgayVe" ColumnName="NgayVe" />
+                <ScalarProperty Name="GioVe" ColumnName="GioVe" />
+                <ScalarProperty Name="NoiDi" ColumnName="NoiDi" />
+                <ScalarProperty Name="NoiDen" ColumnName="NoiDen" />
+                <ScalarProperty Name="Ghichu" ColumnName="Ghichu" />
+                <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+                <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+                <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+                <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+                <ScalarProperty Name="SoNguoi" ColumnName="SoNguoi" />
+                <ScalarProperty Name="ToaDoDi" ColumnName="ToaDoDi" />
+                <ScalarProperty Name="ToaDoDen" ColumnName="ToaDoDen" />
+                <ScalarProperty Name="SdtLienLac" ColumnName="SdtLienLac" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblDieuXes">
+            <EntityTypeMapping TypeName="dieuxe1Model.tblDieuXe">
+              <MappingFragment StoreEntitySet="tblDieuXe">
+                <ScalarProperty Name="MaDieuxe" ColumnName="MaDieuxe" />
+                <ScalarProperty Name="NoiDi" ColumnName="NoiDi" />
+                <ScalarProperty Name="NoiDen" ColumnName="NoiDen" />
+                <ScalarProperty Name="GioDi" ColumnName="GioDi" />
+                <ScalarProperty Name="GioVe" ColumnName="GioVe" />
+                <ScalarProperty Name="TaiXe" ColumnName="TaiXe" />
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+                <ScalarProperty Name="TuyenDuongDi" ColumnName="TuyenDuongDi" />
+                <ScalarProperty Name="TuyenDuongVe" ColumnName="TuyenDuongVe" />
+                <ScalarProperty Name="GhiChu" ColumnName="GhiChu" />
+                <ScalarProperty Name="BienKiemSoat" ColumnName="BienKiemSoat" />
+                <ScalarProperty Name="ChiPhi" ColumnName="ChiPhi" />
+                <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+                <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+                <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+                <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+                <ScalarProperty Name="NgayDi" ColumnName="NgayDi" />
+                <ScalarProperty Name="SoNguoi" ColumnName="SoNguoi" />
+                <ScalarProperty Name="DsDiemDung" ColumnName="DsDiemDung" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblLienHes">
+            <EntityTypeMapping TypeName="dieuxe1Model.tblLienHe">
+              <MappingFragment StoreEntitySet="tblLienHe">
+                <ScalarProperty Name="LienHeID" ColumnName="LienHeID" />
+                <ScalarProperty Name="TenLienHe" ColumnName="TenLienHe" />
+                <ScalarProperty Name="LoailienHe" ColumnName="LoailienHe" />
+                <ScalarProperty Name="SdtLienLac" ColumnName="SdtLienLac" />
+                <ScalarProperty Name="BoPhan" ColumnName="BoPhan" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+                <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+                <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+                <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblLoaiLienHes">
+            <EntityTypeMapping TypeName="dieuxe1Model.tblLoaiLienHe">
+              <MappingFragment StoreEntitySet="tblLoaiLienHe">
+                <ScalarProperty Name="LoaiLienHe" ColumnName="LoaiLienHe" />
+                <ScalarProperty Name="TenLoaiLienHe" ColumnName="TenLoaiLienHe" />
+                <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+                <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+                <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+                <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblLoaiXes">
+            <EntityTypeMapping TypeName="dieuxe1Model.tblLoaiXe">
+              <MappingFragment StoreEntitySet="tblLoaiXe">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SoChoNgoi" ColumnName="SoChoNgoi" />
+                <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+                <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+                <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+                <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblNguoiDungs">
+            <EntityTypeMapping TypeName="dieuxe1Model.tblNguoiDung">
+              <MappingFragment StoreEntitySet="tblNguoiDung">
+                <ScalarProperty Name="NguoiDungID" ColumnName="NguoiDungID" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
+                <ScalarProperty Name="LienHeId" ColumnName="LienHeId" />
+                <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+                <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+                <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+                <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblSearches">
+            <EntityTypeMapping TypeName="dieuxe1Model.tblSearch">
+              <MappingFragment StoreEntitySet="tblSearch">
+                <ScalarProperty Name="LienHeId" ColumnName="LienHeId" />
+                <ScalarProperty Name="diadiem" ColumnName="diadiem" />
+                <ScalarProperty Name="NgayLuu" ColumnName="NgayLuu" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblXes">
+            <EntityTypeMapping TypeName="dieuxe1Model.tblXe">
+              <MappingFragment StoreEntitySet="tblXe">
+                <ScalarProperty Name="BienSoXe" ColumnName="BienSoXe" />
+                <ScalarProperty Name="MaLoai" ColumnName="MaLoai" />
+                <ScalarProperty Name="MauXe" ColumnName="MauXe" />
+                <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+                <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+                <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+                <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="createTableDim_Time" FunctionName="dieuxe1Model.Store.createTableDim_Time" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

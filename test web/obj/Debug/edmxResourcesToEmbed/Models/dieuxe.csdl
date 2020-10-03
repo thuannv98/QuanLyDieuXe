@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="dieuxe1Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Dim_Time">
+    <Key>
+      <PropertyRef Name="Order_Date" />
+    </Key>
+    <Property Name="Order_Date" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="Order_Month" Type="Int32" />
+    <Property Name="Order_Year" Type="Int32" />
+    <Property Name="Order_Quarter" Type="Int32" />
+  </EntityType>
+  <EntityType Name="tblChiTietChuyenDi">
+    <Key>
+      <PropertyRef Name="MaDieuXe" />
+      <PropertyRef Name="DangKyLichChiTietId" />
+    </Key>
+    <Property Name="MaDieuXe" Type="Int32" Nullable="false" />
+    <Property Name="DangKyLichChiTietId" Type="Int32" Nullable="false" />
+    <Property Name="GioDi" Type="Time" Precision="7" />
+  </EntityType>
+  <EntityType Name="tblDangKylich">
+    <Key>
+      <PropertyRef Name="DangKyLichId" />
+    </Key>
+    <Property Name="DangKyLichId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="NgayDangky" Type="DateTime" Precision="3" />
+    <Property Name="LienHeId" Type="Int32" />
+    <Property Name="NguoiTao" Type="Int32" />
+    <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+    <Property Name="NguoiCapnhat" Type="Int32" />
+    <Property Name="SoNguoiDi" Type="Int32" />
+  </EntityType>
+  <EntityType Name="tblDangKyLichChiTiet">
+    <Key>
+      <PropertyRef Name="DangKyLichChiTietId" />
+    </Key>
+    <Property Name="DangKyLichChiTietId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DangKyLichId" Type="Int32" />
+    <Property Name="TenNguoiDi" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="ThoiGianDen" Type="DateTime" Precision="3" />
+    <Property Name="ThoiGianVe" Type="DateTime" Precision="3" />
+    <Property Name="NgayDen" Type="DateTime" Precision="0" />
+    <Property Name="GioDen" Type="Time" Precision="7" />
+    <Property Name="NgayVe" Type="DateTime" Precision="0" />
+    <Property Name="GioVe" Type="Time" Precision="7" />
+    <Property Name="NoiDi" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="NoiDen" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Ghichu" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+    <Property Name="NguoiTao" Type="Int32" />
+    <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+    <Property Name="NguoiCapnhat" Type="Int32" />
+    <Property Name="SoNguoi" Type="Int32" />
+    <Property Name="ToaDoDi" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="ToaDoDen" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="SdtLienLac" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="tblDieuXe">
+    <Key>
+      <PropertyRef Name="MaDieuxe" />
+    </Key>
+    <Property Name="MaDieuxe" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="NoiDi" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="NoiDen" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="GioDi" Type="Time" Precision="7" />
+    <Property Name="GioVe" Type="Time" Precision="7" />
+    <Property Name="TaiXe" Type="Int32" />
+    <Property Name="TrangThai" Type="Int32" />
+    <Property Name="TuyenDuongDi" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="TuyenDuongVe" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="GhiChu" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="BienKiemSoat" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="ChiPhi" Type="Decimal" Precision="19" Scale="4" />
+    <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+    <Property Name="NguoiTao" Type="Int32" />
+    <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+    <Property Name="NguoiCapnhat" Type="Int32" />
+    <Property Name="NgayDi" Type="DateTime" Precision="0" />
+    <Property Name="SoNguoi" Type="Int32" />
+    <Property Name="DsDiemDung" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="tblLienHe">
+    <Key>
+      <PropertyRef Name="LienHeID" />
+    </Key>
+    <Property Name="LienHeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TenLienHe" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="LoailienHe" Type="Int32" />
+    <Property Name="SdtLienLac" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="BoPhan" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+    <Property Name="NguoiTao" Type="Int32" />
+    <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+    <Property Name="NguoiCapnhat" Type="Int32" />
+  </EntityType>
+  <EntityType Name="tblLoaiLienHe">
+    <Key>
+      <PropertyRef Name="LoaiLienHe" />
+    </Key>
+    <Property Name="LoaiLienHe" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TenLoaiLienHe" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+    <Property Name="NguoiTao" Type="Int32" />
+    <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+    <Property Name="NguoiCapnhat" Type="Int32" />
+  </EntityType>
+  <EntityType Name="tblLoaiXe">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="SoChoNgoi" Type="Int32" Nullable="false" />
+    <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+    <Property Name="NguoiTao" Type="Int32" />
+    <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+    <Property Name="NguoiCapnhat" Type="Int32" />
+  </EntityType>
+  <EntityType Name="tblNguoiDung">
+    <Key>
+      <PropertyRef Name="NguoiDungID" />
+    </Key>
+    <Property Name="NguoiDungID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="MatKhau" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="LienHeId" Type="Int32" />
+    <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+    <Property Name="NguoiTao" Type="Int32" />
+    <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+    <Property Name="NguoiCapnhat" Type="Int32" />
+  </EntityType>
+  <EntityType Name="tblSearch">
+    <Key>
+      <PropertyRef Name="LienHeId" />
+      <PropertyRef Name="diadiem" />
+    </Key>
+    <Property Name="LienHeId" Type="Int32" Nullable="false" />
+    <Property Name="diadiem" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="NgayLuu" Type="DateTime" Precision="3" />
+  </EntityType>
+  <EntityType Name="tblXe">
+    <Key>
+      <PropertyRef Name="BienSoXe" />
+    </Key>
+    <Property Name="BienSoXe" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="MaLoai" Type="Int32" Nullable="false" />
+    <Property Name="MauXe" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="NgayDangKy" Type="DateTime" Precision="3" />
+    <Property Name="NguoiTao" Type="Int32" />
+    <Property Name="NgayCapNhat" Type="DateTime" Precision="3" />
+    <Property Name="NguoiCapnhat" Type="Int32" />
+    <Property Name="TrangThai" Type="Int32" />
+  </EntityType>
+  <EntityContainer Name="dieuxe1Entities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Dim_Time" EntityType="Self.Dim_Time" />
+    <EntitySet Name="tblChiTietChuyenDis" EntityType="Self.tblChiTietChuyenDi" />
+    <EntitySet Name="tblDangKyliches" EntityType="Self.tblDangKylich" />
+    <EntitySet Name="tblDangKyLichChiTiets" EntityType="Self.tblDangKyLichChiTiet" />
+    <EntitySet Name="tblDieuXes" EntityType="Self.tblDieuXe" />
+    <EntitySet Name="tblLienHes" EntityType="Self.tblLienHe" />
+    <EntitySet Name="tblLoaiLienHes" EntityType="Self.tblLoaiLienHe" />
+    <EntitySet Name="tblLoaiXes" EntityType="Self.tblLoaiXe" />
+    <EntitySet Name="tblNguoiDungs" EntityType="Self.tblNguoiDung" />
+    <EntitySet Name="tblSearches" EntityType="Self.tblSearch" />
+    <EntitySet Name="tblXes" EntityType="Self.tblXe" />
+    <FunctionImport Name="createTableDim_Time" />
+  </EntityContainer>
+</Schema>

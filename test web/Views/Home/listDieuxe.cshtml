@@ -1,0 +1,55 @@
+﻿@model test_web.Models.tblDieuXe
+
+@{
+    ViewBag.Title = "listDieuxe";
+}
+
+
+
+<h2>listDieuxe</h2>
+<body>
+    @using (Html.BeginForm("Index", "Home", FormMethod.Post))
+    { <div>
+            <h4>tblDieuXe</h4>
+            <hr />
+            <dl class="dl-horizontal">
+                <div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nơi đi</th>
+                                <th>Nơi đến</th>
+                                <th>Tài xế</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ViewBag.dxmodel1)
+                            {
+                                <tr>
+                                    <td>@item.NoiDi</td>
+                                    <td>@item.NoiDen</td>
+                                    @*<td>@item.TaiXe</td>*@
+                                    <td>
+                                        @Html.DropDownListFor(lienhe => lienhe.TaiXe, ViewBag.listTaiXe as SelectList,
+new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(lienhe => lienhe.TaiXe, "", new { @class = "text-danger" })
+                                    </td>
+                                    @*<td><a href="" id="@employee.EmpID" class="btn btn-danger">Delete</a></td>*@
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </dl>
+        </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" class="btn btn-default" />
+        </div>
+    </div>
+    <p>
+        @*@Html.ActionLink("Edit", "Edit", new { id = Model.MaDieuxe }) |
+            @Html.ActionLink("Back to List", "Index")*@
+    </p>}
+</body>

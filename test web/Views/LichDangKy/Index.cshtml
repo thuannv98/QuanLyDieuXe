@@ -1,0 +1,37 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewBag.Title = "Danh sách lịch đăng ký";
+}
+
+<div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Tên người đi</th>
+                <th>Thời gian đến</th>
+                <th>Ngày về</th>
+                <th>Nơi đi</th>
+                <th>Nơi đến</th>
+                <th>Số người</th>
+                <th>Số điện thoại</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in ViewBag.dsdangky)
+            {
+            <tr>
+                <td>@item.TenNguoiDi</td>
+                <td>@item.ThoiGianDen</td>
+                <td>@item.NgayVe</td>
+                <td>@item.NoiDi</td>
+                <td>@item.NoiDen</td>
+                <td>@item.SoNguoi</td>
+                <td>@item.SdtLienLac</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

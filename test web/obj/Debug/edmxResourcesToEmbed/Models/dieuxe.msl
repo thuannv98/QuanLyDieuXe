@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="dieuxe1ModelStoreContainer" CdmEntityContainer="dieuxe1Entities">
+    <EntitySetMapping Name="Dim_Time">
+      <EntityTypeMapping TypeName="dieuxe1Model.Dim_Time">
+        <MappingFragment StoreEntitySet="Dim_Time">
+          <ScalarProperty Name="Order_Date" ColumnName="Order_Date" />
+          <ScalarProperty Name="Order_Month" ColumnName="Order_Month" />
+          <ScalarProperty Name="Order_Year" ColumnName="Order_Year" />
+          <ScalarProperty Name="Order_Quarter" ColumnName="Order_Quarter" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblChiTietChuyenDis">
+      <EntityTypeMapping TypeName="dieuxe1Model.tblChiTietChuyenDi">
+        <MappingFragment StoreEntitySet="tblChiTietChuyenDi">
+          <ScalarProperty Name="MaDieuXe" ColumnName="MaDieuXe" />
+          <ScalarProperty Name="DangKyLichChiTietId" ColumnName="DangKyLichChiTietId" />
+          <ScalarProperty Name="GioDi" ColumnName="GioDi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblDangKyliches">
+      <EntityTypeMapping TypeName="dieuxe1Model.tblDangKylich">
+        <MappingFragment StoreEntitySet="tblDangKylich">
+          <ScalarProperty Name="DangKyLichId" ColumnName="DangKyLichId" />
+          <ScalarProperty Name="NgayDangky" ColumnName="NgayDangky" />
+          <ScalarProperty Name="LienHeId" ColumnName="LienHeId" />
+          <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+          <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+          <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+          <ScalarProperty Name="SoNguoiDi" ColumnName="SoNguoiDi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblDangKyLichChiTiets">
+      <EntityTypeMapping TypeName="dieuxe1Model.tblDangKyLichChiTiet">
+        <MappingFragment StoreEntitySet="tblDangKyLichChiTiet">
+          <ScalarProperty Name="DangKyLichChiTietId" ColumnName="DangKyLichChiTietId" />
+          <ScalarProperty Name="DangKyLichId" ColumnName="DangKyLichId" />
+          <ScalarProperty Name="TenNguoiDi" ColumnName="TenNguoiDi" />
+          <ScalarProperty Name="ThoiGianDen" ColumnName="ThoiGianDen" />
+          <ScalarProperty Name="ThoiGianVe" ColumnName="ThoiGianVe" />
+          <ScalarProperty Name="NgayDen" ColumnName="NgayDen" />
+          <ScalarProperty Name="GioDen" ColumnName="GioDen" />
+          <ScalarProperty Name="NgayVe" ColumnName="NgayVe" />
+          <ScalarProperty Name="GioVe" ColumnName="GioVe" />
+          <ScalarProperty Name="NoiDi" ColumnName="NoiDi" />
+          <ScalarProperty Name="NoiDen" ColumnName="NoiDen" />
+          <ScalarProperty Name="Ghichu" ColumnName="Ghichu" />
+          <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+          <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+          <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+          <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+          <ScalarProperty Name="SoNguoi" ColumnName="SoNguoi" />
+          <ScalarProperty Name="ToaDoDi" ColumnName="ToaDoDi" />
+          <ScalarProperty Name="ToaDoDen" ColumnName="ToaDoDen" />
+          <ScalarProperty Name="SdtLienLac" ColumnName="SdtLienLac" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblDieuXes">
+      <EntityTypeMapping TypeName="dieuxe1Model.tblDieuXe">
+        <MappingFragment StoreEntitySet="tblDieuXe">
+          <ScalarProperty Name="MaDieuxe" ColumnName="MaDieuxe" />
+          <ScalarProperty Name="NoiDi" ColumnName="NoiDi" />
+          <ScalarProperty Name="NoiDen" ColumnName="NoiDen" />
+          <ScalarProperty Name="GioDi" ColumnName="GioDi" />
+          <ScalarProperty Name="GioVe" ColumnName="GioVe" />
+          <ScalarProperty Name="TaiXe" ColumnName="TaiXe" />
+          <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+          <ScalarProperty Name="TuyenDuongDi" ColumnName="TuyenDuongDi" />
+          <ScalarProperty Name="TuyenDuongVe" ColumnName="TuyenDuongVe" />
+          <ScalarProperty Name="GhiChu" ColumnName="GhiChu" />
+          <ScalarProperty Name="BienKiemSoat" ColumnName="BienKiemSoat" />
+          <ScalarProperty Name="ChiPhi" ColumnName="ChiPhi" />
+          <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+          <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+          <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+          <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+          <ScalarProperty Name="NgayDi" ColumnName="NgayDi" />
+          <ScalarProperty Name="SoNguoi" ColumnName="SoNguoi" />
+          <ScalarProperty Name="DsDiemDung" ColumnName="DsDiemDung" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblLienHes">
+      <EntityTypeMapping TypeName="dieuxe1Model.tblLienHe">
+        <MappingFragment StoreEntitySet="tblLienHe">
+          <ScalarProperty Name="LienHeID" ColumnName="LienHeID" />
+          <ScalarProperty Name="TenLienHe" ColumnName="TenLienHe" />
+          <ScalarProperty Name="LoailienHe" ColumnName="LoailienHe" />
+          <ScalarProperty Name="SdtLienLac" ColumnName="SdtLienLac" />
+          <ScalarProperty Name="BoPhan" ColumnName="BoPhan" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+          <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+          <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+          <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblLoaiLienHes">
+      <EntityTypeMapping TypeName="dieuxe1Model.tblLoaiLienHe">
+        <MappingFragment StoreEntitySet="tblLoaiLienHe">
+          <ScalarProperty Name="LoaiLienHe" ColumnName="LoaiLienHe" />
+          <ScalarProperty Name="TenLoaiLienHe" ColumnName="TenLoaiLienHe" />
+          <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+          <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+          <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+          <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblLoaiXes">
+      <EntityTypeMapping TypeName="dieuxe1Model.tblLoaiXe">
+        <MappingFragment StoreEntitySet="tblLoaiXe">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SoChoNgoi" ColumnName="SoChoNgoi" />
+          <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+          <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+          <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+          <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblNguoiDungs">
+      <EntityTypeMapping TypeName="dieuxe1Model.tblNguoiDung">
+        <MappingFragment StoreEntitySet="tblNguoiDung">
+          <ScalarProperty Name="NguoiDungID" ColumnName="NguoiDungID" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="MatKhau" ColumnName="MatKhau" />
+          <ScalarProperty Name="LienHeId" ColumnName="LienHeId" />
+          <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+          <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+          <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+          <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblSearches">
+      <EntityTypeMapping TypeName="dieuxe1Model.tblSearch">
+        <MappingFragment StoreEntitySet="tblSearch">
+          <ScalarProperty Name="LienHeId" ColumnName="LienHeId" />
+          <ScalarProperty Name="diadiem" ColumnName="diadiem" />
+          <ScalarProperty Name="NgayLuu" ColumnName="NgayLuu" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblXes">
+      <EntityTypeMapping TypeName="dieuxe1Model.tblXe">
+        <MappingFragment StoreEntitySet="tblXe">
+          <ScalarProperty Name="BienSoXe" ColumnName="BienSoXe" />
+          <ScalarProperty Name="MaLoai" ColumnName="MaLoai" />
+          <ScalarProperty Name="MauXe" ColumnName="MauXe" />
+          <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
+          <ScalarProperty Name="NguoiTao" ColumnName="NguoiTao" />
+          <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+          <ScalarProperty Name="NguoiCapnhat" ColumnName="NguoiCapnhat" />
+          <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="createTableDim_Time" FunctionName="dieuxe1Model.Store.createTableDim_Time" />
+  </EntityContainerMapping>
+</Mapping>

@@ -1,0 +1,755 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model List<test_web.Models.tblDangKyLichChiTiet>
+
+@{
+    ViewBag.Title = "Chia nhóm đi công tác";
+}
+
+@section style
+{
+    <link rel="stylesheet" type="text/css" href="~/Content/map.css">
+}
+<div id="googlemap">
+</div>
+@if (ViewBag.dschuyendi == null)
+{
+    <form method="post" action="/ChiaNhom/PhanTich">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTietId, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichId, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].Ghichu, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].GioDen, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].GioVe, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].NgayCapNhat, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].NgayDangKy, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].NgayDen, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].NgayVe, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].NguoiCapnhat, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].NguoiTao, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].NoiDen, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].NoiDi, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].SdtLienLac, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].SoNguoi, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].TenNguoiDi, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].ThoiGianDen, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].ThoiGianVe, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].ToaDoDen, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].ToaDoDi, new { style = "display: none;" })
+        }
+        <input type="submit" value="Bắt đầu phân tích" style="position: fixed;" />
+    </form>
+}
+else
+{
+    <div id="ketqua">
+        <p>Danh sách chuyến đi gợi ý</p>
+        <div id="danhsachchuyen">
+            <table class="table table-bordered" id="bangketqua">
+                <thead>
+                    <tr>
+                        <td>Địa chỉ cuối</td>
+                        <td>Số người</td>
+                        <td>Xe</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in ViewBag.dschuyendi)
+                    {
+                        <tr class='clickable-row'>
+                            <td>@item.DiaChiCuoiCung</td>
+                            <td>@item.tongsonguoi</td>
+                            <td>@item.xedi.BienSoXe</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div id="sua" style="height:200px; display: none">
+            <p>Sửa chuyến đi</p>
+            <div id="danhsachchuyen">
+                <table id="tablesua">
+                    <thead>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div id="chitietdiemdung">
+        <p id="diachi"></p>
+        <p id="gioxeden"></p>
+        <p id="lenxe_xuongxe"></p>
+        <table class="table table-bordered" id="bangnguoidi">
+            <thead>
+                <tr>
+                    <th>Số người</th>
+                    <th>Thời gian yêu cầu</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="hangdoi">
+        <p>Các lịch đăng ký đang chờ</p>
+        <div class="danhsach" id="danhsach">
+        </div>
+    </div>
+}
+@*<input type="button" value="Bắt đầu phân tích" style="position: fixed;"
+    onclick="@("location.href='" + @Url.Action("PhanTich", "ChiaNhom") + "'");" />*@
+@*<button onclick="@("window.location.href='" + @Url.Action("Index", "ChiaNhom", Model) + "'");">Chia nhóm</button>*@
+
+@section scripts
+{
+    @*<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>*@
+    <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDiz4sWuWYTwdjwZ0wqDnrOJFgXrK2TjH8&callback=initMap"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script>
+        var map;
+        var dsketqua;
+        var curvature = 0.5; // how curvy to make the arc
+
+        var queue = new ObservableArray([]);
+
+        function initMap() {
+            var Map = google.maps.Map,
+                LatLng = google.maps.LatLng,
+                LatLngBounds = google.maps.LatLngBounds,
+                Marker = google.maps.Marker,
+                Point = google.maps.Point;
+
+            map = new Map(document.getElementById('googlemap'), {
+                center: { lat: 10.832282, lng: 106.778043 },
+                zoom: 12
+            });
+            $("#googlemap").css("position", "fixed !important");
+            var directionsService = new google.maps.DirectionsService();
+            var directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+
+
+            var pins = ["blue-dot", "red-dot", "green-dot", "ltblue-dot", "yellow-dot", "purple-dot", "pink-dot", "orange-dot",
+                "blue", "red", "green", "lightblue", "yellow", "purple", "pink", "orange",
+                "blue-pushpin", "red-pushpin", "grn-pushpin", "ltblu-pushpin", "ylw-pushpin", "purple-pushpin", "pink-pushpin"];
+            var baseUrl = "http://maps.google.com/mapfiles/ms/icons/", format = ".png";
+
+            var markerpairs = [];
+
+            var array = @Html.Raw(Json.Encode(@ViewBag.dslichngaymai));
+            if (array != null) {
+                var pin = -1;
+                for (var i = 0; i < array.length; i++) {
+                    if (pin == pins.length)
+                        pin = -1;
+                    pin++;
+                    var pinUrl = baseUrl + pins[pin] + format;
+
+                    var LatLngDi = array[i].DangKyLichChiTiet.ToaDoDi;
+                    var LatLngDen = array[i].DangKyLichChiTiet.ToaDoDen;
+                    var Di = ["", ""];
+                    var Den = ["", ""];
+                    var charArray = LatLngDi.split('');
+                    var k = 0;
+                    for (var j = 0; j < charArray.length; j++) {
+                        if (charArray[j] !== "," && charArray[j] !== " ")
+                            Di[k] += charArray[j];
+                        else
+                            k = 1;
+                    }
+
+                    var charArray = LatLngDen.split('');
+                    var k = 0;
+                    for (var j = 0; j < charArray.length; j++) {
+                        if (charArray[j] !== "," && charArray[j] !== " ")
+                            Den[k] += charArray[j];
+                        else
+                            k = 1;
+                    }
+
+                    var Latlng1 = new google.maps.LatLng(Di[0], Di[1]);
+                    var Latlng2 = new google.maps.LatLng(Den[0], Den[1]);
+                    var marker = new google.maps.Marker({ position: Latlng1, map: map, title: (i + 1) + ": Nơi đi", icon: pinUrl });
+                    var marker = new google.maps.Marker({ position: Latlng2, map: map, title: (i + 1) + ": Nơi đến", icon: pinUrl });
+                }
+            }
+
+            else {
+                var array = @Html.Raw(Json.Encode(@ViewBag.dschuyendi));
+                if (array != null) {
+                    dsketqua = array;
+                    alert("số chuyến: " + array.length);
+
+                    var pin = -1;
+                    for (var i = 0; i < array.length; i++) {
+                        let chuyendi = array[i];
+                        let dsdiem = chuyendi.dsDiem;
+
+                        let originCoor = dsdiem[0].location,
+                            destinationCoor = dsdiem[dsdiem.length - 1].location;
+                        let origin = new LatLng(originCoor.Latitude, originCoor.Longitude);
+                        let destination = new LatLng(destinationCoor.Latitude, destinationCoor.Longitude);
+
+                        if (pin == pins.length)
+                            pin = -1;
+                        pin++;
+                        var pinUrl = baseUrl + pins[pin] + format;
+                        var markerOrg = new Marker({
+                            position: origin,
+                            label: String(i + 1),
+                            draggable: true,
+                            map: map,
+                            title: (i + 1) + ": Nơi đi",
+                            icon: pinUrl
+                        });
+                        var markerDes = new Marker({
+                            position: destination,
+                            label: String(i + 1),
+                            draggable: true,
+                            map: map,
+                            title: (i + 1) + ": Nơi đến",
+                            icon: pinUrl
+                        });
+
+                        let pair = [markerOrg, markerDes];
+                        markerpairs.push(pair);
+
+                        //let waypoints = [];
+
+                        //for (let j = 1; j < dsdiem.length - 1; j++) {
+                        //    let point = dsdiem[j].location;
+                        //    alert(j + ": " + point.Latitude +", "+ point.Longitude);
+                        //    waypoints.push({
+                        //        location: new google.maps.LatLng(point.Latitude, point.Longitude),
+                        //        stopover: false
+                        //    });
+                        //}
+                        //let request = {
+                        //    origin: origin,
+                        //    destination: destination,
+                        //    waypoints: waypoints,
+                        //    travelMode: 'DRIVING'
+                        //};
+                        //alert("D:");
+                        //directionsService.route(request, function (result, status) {
+                        //    if (status == 'OK') {
+                        //        directionsRenderer.setDirections(result);
+                        //        //alert(result.routes[0].legs[0].distance.value);
+                        //        //waypoints.forEach(element => {
+                        //        //    var uluru = {lat: element.location.lat(), lng: element.location.lng()};
+                        //        //    var marker = new google.maps.Marker({position: uluru, map: map});
+                        //        //});
+                        //    }
+                        //});
+                    }
+
+
+                    google.maps.event.addListener(map, 'projection_changed', updateCurveMarker);
+                    google.maps.event.addListener(map, 'zoom_changed', updateCurveMarker);
+                }
+            }
+
+            var curveMarker = [];
+            function updateCurveMarker() {
+
+                for (var i = 0; i < markerpairs.length; i++) {
+                    var pos1 = markerpairs[i][0].getPosition(), // latlng
+                        pos2 = markerpairs[i][1].getPosition(),
+                        projection = map.getProjection(),
+                        p1 = projection.fromLatLngToPoint(pos1), // xy
+                        p2 = projection.fromLatLngToPoint(pos2);
+
+                    // Calculate the arc.
+                    // To simplify the math, these points
+                    // are all relative to p1:
+                    var e = new Point(p2.x - p1.x, p2.y - p1.y), // endpoint (p2 relative to p1)
+                        m = new Point(e.x / 2, e.y / 2), // midpoint
+                        o = new Point(e.y, -e.x), // orthogonal
+                        c = new Point( // curve control point
+                            m.x + curvature * o.x,
+                            m.y + curvature * o.y);
+
+                    var pathDef = 'M 0,0 ' +
+                        'q ' + c.x + ',' + c.y + ' ' + e.x + ',' + e.y;
+
+                    var zoom = map.getZoom(),
+                        scale = 1 / (Math.pow(2, -zoom));
+
+                    var symbol = {
+                        path: pathDef,
+                        scale: scale,
+                        strokeWeight: 2,
+                        fillColor: 'none'
+                    };
+
+                    if (!curveMarker[i]) {
+                        curveMarker[i] = new Marker({
+                            position: pos1,
+                            clickable: false,
+                            icon: symbol,
+                            zIndex: 0, // behind the other markers
+                            map: map
+                        });
+                    } else {
+                        curveMarker[i].setOptions({
+                            position: pos1,
+                            icon: symbol,
+                        });
+                    }
+                }
+
+
+            }
+
+
+            //$(".clickable-row").click(function () {
+            //    alert("DS");
+            //});
+            var tempMarkerList = [];
+            var table = document.getElementById('bangketqua')
+            var tbody = table.getElementsByTagName('tbody')[0]
+            var rows = tbody.getElementsByTagName('tr');
+            for (i = 0; i < rows.length; i++) {
+                rows[i].onclick = function () {
+                    $("#sua").css("display", "block");
+
+                    if (curveMarker[0].getMap() != null)
+                        setMapOnAll(curveMarker, null);     //xóa tất cả marker khỏi map
+                    setMapOnAll(tempMarkerList, null);
+                    tempMarkerList = [];
+                    //alert(this.rowIndex);
+                    var index = this.rowIndex - 1;
+
+                    var dsdiem = dsketqua[index].dsDiem;
+                    //q
+                    var dsLichDangkyChitiet = dsketqua[index].listChitietnguoidi;
+                    //
+                    //put DieuXeDetail
+                    var tablesua = document.getElementById('tablesua')
+                    tablesua.deleteTHead();
+                    var thead = tablesua.createTHead()
+                    var rowH = thead.insertRow(0);
+                    var cell = rowH.insertCell(0);
+                    var cell1 = rowH.insertCell(0);
+                    cell.innerHTML = "<b>Nơi đi</b>";
+                    cell1.innerHTML = "<b>Nơi đến</b>";
+
+                    var Cu_tbody = tablesua.getElementsByTagName('tbody')[0]
+                    var rowsua = Cu_tbody.getElementsByTagName('tr');
+                    var Moi_tbody = document.createElement('tbody');
+
+                    for (k = 0; k < dsLichDangkyChitiet.length; k++) {
+                        //alert(dsLichDangkyChitiet.length);
+                        var newRow = Moi_tbody.insertRow();
+                        // Insert a column in the row at index 0
+                        var newCell0 = newRow.insertCell(0);
+                        var newCell1 = newRow.insertCell(1);
+                        var newCell2 = newRow.insertCell(2);
+                        // Append a text node to the cell
+                        var newText0 = document.createTextNode("(" + dsLichDangkyChitiet[k].GioDi.Hours + ":" + dsLichDangkyChitiet[k].GioDi.Minutes + ") " + dsLichDangkyChitiet[k].NoiDi);
+                        var newText1 = document.createTextNode(dsLichDangkyChitiet[k].NoiDen);
+                        var buttonXoa = document.createElement("INPUT");
+                        buttonXoa.setAttribute("type", "button");
+                        buttonXoa.setAttribute("value", "Xóa");
+                        newCell0.appendChild(newText0);
+                        newCell1.appendChild(newText1);
+                        newCell2.appendChild(buttonXoa);
+
+                        buttonXoa.onclick = function () {
+                            var ind = this.parentNode.parentNode.rowIndex - 1;
+                            alert(ind);
+
+                            for (let u = 0; u < dsdiem.length; u++)
+                            {
+                                var point = dsdiem[u];
+                                for (let v = 0; v < point.dsdiemcungtoado.length; v++)
+                                {
+                                    if (point.dsdiemcungtoado[v].DangKyLichChiTietId == dsLichDangkyChitiet[ind].DangKyLichChiTietId)
+                                    {
+                                        dsdiem[u].dsdiemcungtoado.splice(v, 1);
+                                        break;
+                                    }
+                                }
+                            }
+                            dsdiem = dsdiem.filter(item => !(item.dsdiemcungtoado.length == 0));
+                            queue.push(dsketqua[index].listChitietnguoidi[ind]);
+                            dsketqua[index].listChitietnguoidi.splice(ind, 1);
+                            
+                            document.getElementById("tablesua").deleteRow(ind);
+
+
+
+                        };
+
+                    }
+                    tablesua.replaceChild(Moi_tbody, Cu_tbody)// hoan doi 2 bang
+
+
+                    let originCoor = dsdiem[0].location,
+                        destinationCoor = dsdiem[dsdiem.length - 1].location;
+                    let origin = new LatLng(originCoor.Latitude, originCoor.Longitude);
+                    let destination = new LatLng(destinationCoor.Latitude, destinationCoor.Longitude);
+                    let waypoints = [];
+                    for (let j = 1; j < dsdiem.length - 1; j++) {
+                        let point = dsdiem[j].location;
+                        waypoints.push({
+                            location: new google.maps.LatLng(point.Latitude, point.Longitude),
+                            stopover: false
+                        });
+                    }
+                    let request = {
+                        origin: origin,
+                        destination: destination,
+                        waypoints: waypoints,
+                        travelMode: 'DRIVING'
+                    };
+                    directionsService.route(request, function (result, status) {
+                        if (status == 'OK') {
+                            directionsRenderer.setDirections(result);
+                            //alert(result.routes[0].legs[0].distance.value);
+                            dsdiem.forEach(element => {
+                                var point = { lat: element.location.Latitude, lng: element.location.Longitude };
+                                var marker = new google.maps.Marker({ position: point, map: map });
+                                marker.addListener("click", () => {
+                                    $("#diachi").text(element.diachi);
+                                    $("#gioxeden").text("Xe đến lúc "+element.thoigianxeden_luotdi.Hours + ":" + element.thoigianxeden_luotdi.Minutes);
+                                    var table = document.getElementById('bangnguoidi');
+                                    var tbody = table.getElementsByTagName('tbody')[0];
+                                    var ds = $.grep(element.dsdiemcungtoado, function (p) { return p.thoigianden != null; })
+                                        .map(function (p) { return p; });
+
+                                    for (var j = 0; j < ds.length; j++) {
+                                        var newRow = tbody.insertRow();
+
+                                        // Insert a cell in the row at index 0
+                                        var newCell0 = newRow.insertCell(0);
+                                        var newCell1 = newRow.insertCell(1);
+
+                                        // Append a text node to the cell
+                                        var newText0 = document.createTextNode(ds[j].songuoi);
+                                        var newText1 = document.createTextNode(ds[j].thoigianden.Hours + ":" + ds[j].thoigianden.Minutes);
+                                        newCell0.appendChild(newText0);
+                                        newCell1.appendChild(newText1);
+                                    }
+                                    $("#chitietdiemdung").css("display", "block");
+
+                                    var w = $(window).width() - $("#ketqua").outerWidth() - $("#ketqua").position().left;
+                                    var h = $(window).height();
+                                    var divWidth = $("#chitietdiemdung").outerWidth();
+                                    var divHeight = $("#chitietdiemdung").outerHeight();
+                                    $("#chitietdiemdung").css("top", (h - divHeight) / 2);
+                                    $("#chitietdiemdung").css("left", (w - divWidth) / 2);
+
+                                    map.addListener("click", () => {
+                                        $("#chitietdiemdung").css("display", "none");
+                                    });
+                                });
+                                tempMarkerList.push(marker);
+                            });
+                        }
+                    });
+                }
+            }
+
+            function setMapOnAll(markers, map) {
+                for (let i = 0; i < markers.length; i++) {
+                    markers[i].setMap(map);
+                }
+            }
+        }
+
+
+        var script = document.createElement('script');
+        script.src = 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js';
+        script.type = 'text/javascript';
+        document.getElementsByTagName('head')[0].appendChild(script);
+
+        function ObservableArray(items) {
+            var _self = this,
+                _array = [],
+                _handlers = {
+                    itemadded: [],
+                    itemremoved: [],
+                    itemset: []
+                };
+
+            function defineIndexProperty(index) {
+                if (!(index in _self)) {
+                    Object.defineProperty(_self, index, {
+                        configurable: true,
+                        enumerable: true,
+                        get: function () {
+                            return _array[index];
+                        },
+                        set: function (v) {
+                            _array[index] = v;
+                            raiseEvent({
+                                type: "itemset",
+                                index: index,
+                                item: v
+                            });
+                        }
+                    });
+                }
+            }
+
+            function raiseEvent(event) {
+                _handlers[event.type].forEach(function (h) {
+                    h.call(_self, event);
+                });
+            }
+
+            Object.defineProperty(_self, "addEventListener", {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: function (eventName, handler) {
+                    eventName = ("" + eventName).toLowerCase();
+                    if (!(eventName in _handlers)) throw new Error("Invalid event name.");
+                    if (typeof handler !== "function") throw new Error("Invalid handler.");
+                    _handlers[eventName].push(handler);
+                }
+            });
+
+            Object.defineProperty(_self, "removeEventListener", {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: function (eventName, handler) {
+                    eventName = ("" + eventName).toLowerCase();
+                    if (!(eventName in _handlers)) throw new Error("Invalid event name.");
+                    if (typeof handler !== "function") throw new Error("Invalid handler.");
+                    var h = _handlers[eventName];
+                    var ln = h.length;
+                    while (--ln >= 0) {
+                        if (h[ln] === handler) {
+                            h.splice(ln, 1);
+                        }
+                    }
+                }
+            });
+
+            Object.defineProperty(_self, "push", {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: function () {
+                    var index;
+                    for (var i = 0, ln = arguments.length; i < ln; i++) {
+                        index = _array.length;
+                        _array.push(arguments[i]);
+                        defineIndexProperty(index);
+                        raiseEvent({
+                            type: "itemadded",
+                            index: index,
+                            item: arguments[i]
+                        });
+                    }
+                    return _array.length;
+                }
+            });
+
+            Object.defineProperty(_self, "pop", {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: function () {
+                    if (_array.length > -1) {
+                        var index = _array.length - 1,
+                            item = _array.pop();
+                        delete _self[index];
+                        raiseEvent({
+                            type: "itemremoved",
+                            index: index,
+                            item: item
+                        });
+                        return item;
+                    }
+                }
+            });
+
+            Object.defineProperty(_self, "unshift", {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: function () {
+                    for (var i = 0, ln = arguments.length; i < ln; i++) {
+                        _array.splice(i, 0, arguments[i]);
+                        defineIndexProperty(_array.length - 1);
+                        raiseEvent({
+                            type: "itemadded",
+                            index: i,
+                            item: arguments[i]
+                        });
+                    }
+                    for (; i < _array.length; i++) {
+                        raiseEvent({
+                            type: "itemset",
+                            index: i,
+                            item: _array[i]
+                        });
+                    }
+                    return _array.length;
+                }
+            });
+
+            Object.defineProperty(_self, "shift", {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: function () {
+                    if (_array.length > -1) {
+                        var item = _array.shift();
+                        delete _self[_array.length];
+                        raiseEvent({
+                            type: "itemremoved",
+                            index: 0,
+                            item: item
+                        });
+                        return item;
+                    }
+                }
+            });
+
+            Object.defineProperty(_self, "splice", {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: function (index, howMany /*, element1, element2, ... */) {
+                    var removed = [],
+                        item,
+                        pos;
+
+                    index = index == null ? 0 : index < 0 ? _array.length + index : index;
+
+                    howMany = howMany == null ? _array.length - index : howMany > 0 ? howMany : 0;
+
+                    while (howMany--) {
+                        item = _array.splice(index, 1)[0];
+                        removed.push(item);
+                        delete _self[_array.length];
+                        raiseEvent({
+                            type: "itemremoved",
+                            index: index + removed.length - 1,
+                            item: item
+                        });
+                    }
+
+                    for (var i = 2, ln = arguments.length; i < ln; i++) {
+                        _array.splice(index, 0, arguments[i]);
+                        defineIndexProperty(_array.length - 1);
+                        raiseEvent({
+                            type: "itemadded",
+                            index: index,
+                            item: arguments[i]
+                        });
+                        index++;
+                    }
+
+                    return removed;
+                }
+            });
+
+            Object.defineProperty(_self, "length", {
+                configurable: false,
+                enumerable: false,
+                get: function () {
+                    return _array.length;
+                },
+                set: function (value) {
+                    var n = Number(value);
+                    var length = _array.length;
+                    if (n % 1 === 0 && n >= 0) {
+                        if (n < length) {
+                            _self.splice(n);
+                        } else if (n > length) {
+                            _self.push.apply(_self, new Array(n - length));
+                        }
+                    } else {
+                        throw new RangeError("Invalid array length");
+                    }
+                    _array.length = n;
+                    return value;
+                }
+            });
+
+            Object.getOwnPropertyNames(Array.prototype).forEach(function (name) {
+                if (!(name in _self)) {
+                    Object.defineProperty(_self, name, {
+                        configurable: false,
+                        enumerable: false,
+                        writable: false,
+                        value: Array.prototype[name]
+                    });
+                }
+            });
+
+            if (items instanceof Array) {
+                _self.push.apply(_self, items);
+            }
+        }
+
+        queue.addEventListener("itemadded", function (e) {
+            var ten = e.item.TenNguoiDi;
+            var noidi = e.item.NoiDi;
+            var noiden = e.item.NoiDen;
+            //var gioden = e.item.GioDen.Hours + ":" + e.item.GioDen.Minutes;
+            //var giove = e.item.GioVe.Hours + ":" + e.item.GioVe.Minutes;
+
+            var newitem = "<div class=\"item\">";
+            newitem += "<div class=\"nguoidi\">" + ten + "</div>";
+            newitem += "<div class=\"noidi\">" + noidi + "</div>";
+            //newitem += "<div class=\"icon\">mũi tên</div>";
+            newitem += "<div class=\"noiden\">" + noiden + "</div>"; /* (+ gioden + " - " + giove + ")<br/>"*/
+            newitem += "</div>";
+
+            alert(newitem);
+            document.getElementById("danhsach").innerHTML += newitem;
+            capnhatgrid();
+        });
+
+        queue.addEventListener("itemremoved", function (e) {
+            var items = document.getElementById("danhsach").children;
+            items[e.index].remove();
+            capnhatgrid();
+        });
+
+        function capnhatgrid() {
+            var x = document.getElementById("danhsach").childElementCount;
+            var s = "";
+            for (var i = 0; i < x / 2; i++) {
+                s += "auto ";
+            }
+            $("#danhsach").css("grid-template-columns", s);
+        }
+
+        $(document).ready(function () {
+            //queue = new ObservableArray([]);
+            //queue.push({ TenNguoiDi: "thuận", NoiDi : "nơi đi 1", NoiDen :  "Nơi đến 1", GioDen : "08:00", GioVe : "16:00" });
+            //queue.push({ TenNguoiDi: "quang", NoiDi : "nơi đi 2", NoiDen :  "Nơi đến 2", GioDen : "07:00", GioVe : "16:00" });
+            $("#buttonthemlich").click(function () {
+
+            });
+
+            $("#buttonxoalich").click(function () {
+                if (queue.length > 0)
+                    queue.splice(0, 1);
+            });
+        });
+    </script>
+
+    <script>
+    </script>
+
+    @*<script type="text/javascript" src="~/Scripts/map.js"></script>*@
+}

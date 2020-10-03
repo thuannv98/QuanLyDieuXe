@@ -1,0 +1,71 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewBag.Title = "Danh sách lịch đăng ký ngày mai";
+}
+
+@model List <test_web.Models.LichDangKy>
+
+<div>
+    <h4>Danh sách lịch đăng ký công tác ngày mai</h4>
+    <hr />
+    <form method="post" action="/ChiaNhom/Index">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            @Html.TextBoxFor(m => m[i].NguoiDangKy, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.DangKyLichChiTietId, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.DangKyLichId, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.Ghichu, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.GioDen, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.GioVe, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.NgayCapNhat, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.NgayDangKy, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.NgayDen, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.NgayVe, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.NguoiCapnhat, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.NguoiTao, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.NoiDen, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.NoiDi, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.SdtLienLac, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.SoNguoi, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.TenNguoiDi, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.ThoiGianDen, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.ThoiGianVe, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.ToaDoDen, new { style = "display: none;" })
+            @Html.TextBoxFor(m => m[i].DangKyLichChiTiet.ToaDoDi, new { style = "display: none;" })
+        }
+        <input type="submit" value="Chia Nhóm" />
+    </form>
+    @*<button onclick="@("window.location.href='" + @Url.Action("Index", "ChiaNhom", Model) + "'");">Chia nhóm</button>*@
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Người đăng ký</th>
+                <th>Tên người đi</th>
+                <th>Thời gian đến</th>
+                <th>Thời gian về</th>
+                <th>Nơi đi</th>
+                <th>Nơi đến</th>
+                <th>Số người</th>
+                <th>Số điện thoại</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.NguoiDangKy</td>
+                    <td>@item.DangKyLichChiTiet.TenNguoiDi</td>
+                    <td>@item.DangKyLichChiTiet.ThoiGianDen</td>
+                    <td>@item.DangKyLichChiTiet.ThoiGianVe</td>
+                    <td>@item.DangKyLichChiTiet.NoiDi</td>
+                    <td>@item.DangKyLichChiTiet.NoiDen</td>
+                    <td>@item.DangKyLichChiTiet.SoNguoi</td>
+                    <td>@item.DangKyLichChiTiet.SdtLienLac</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

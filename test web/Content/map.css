@@ -1,0 +1,68 @@
+﻿body {
+}
+
+#googlemap {
+    position: fixed !important;
+    height: 100% !important;
+    width: 100% !important;
+}
+
+#ketqua {
+    padding: 15px;
+    position: fixed;
+    height: 100%;
+    width: 25%;
+    background: white;
+}
+
+#danhsachchuyen {
+    overflow-y: auto;
+}
+
+.clickable-row {
+    cursor: pointer;
+}
+
+#chitietdiemdung {
+    position: fixed;
+    /*height: 300px;*/
+    width: 500px;
+    background: white;
+    border-radius: 3px;
+    border-color: blueviolet;
+    display: none;
+    padding: 10px;
+    border: groove;
+}
+
+#chitietdiemdung #diachi{
+    text-align: center;
+}
+
+#chitietdiemdung #table{
+    width: 100%;
+}
+
+#hangdoi {
+    position: fixed;
+    background: white;
+    left: 25%;
+    top: 72%;
+    width: 75%;
+    height: 25%;
+}
+
+.danhsach {
+    display: grid;
+    grid-gap: 5px;
+    width: 100%;
+    overflow-x: auto
+}
+
+.danhsach .item{
+    background-color: #4cff00;
+    color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    padding: 5px;
+    width: 400px;
+}
