@@ -25,6 +25,11 @@ namespace test_web.Models
         {
 
         }
+        public Coordinate(Coordinate c)
+        {
+            this.latitude = c.Latitude;
+            this.longitude = c.Longitude;
+        }
         public Coordinate(double lat, double lng)
         {
             this.latitude = lat;
@@ -39,7 +44,6 @@ namespace test_web.Models
                 return false;
         }
     }
-
     public class Vector
     {
         double lat;

@@ -42,10 +42,10 @@ namespace test_web.Controllers
             var dsdieuxe = ketqua.DsDieuXe;
             var dschuyendi = ketqua.DsChuyenDi;
 
-            string j1 = ketqua.json1, j2 = ketqua.json2;
+            //string j1 = ketqua.json1, j2 = ketqua.json2;
 
-            Debug.WriteLine("j1: \n" + j1);
-            Debug.WriteLine("j2: \n" + j2);
+            //Debug.WriteLine("j1: \n" + j1);
+            //Debug.WriteLine("j2: \n" + j2);
 
             ViewBag.dschuyendi = dschuyendi;
             ViewBag.dsdieuxe = dsdieuxe;

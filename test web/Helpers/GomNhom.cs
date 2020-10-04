@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using test_web.Models;
@@ -18,11 +19,30 @@ namespace test_web.Helpers
         public TimeSpan thoigianxeden_luotve { get; set; }
 
         public List<point_detail> dsdiemcungtoado { get; set; }
+
+        public Point()
+        {
+
+        }
+        public Point(Point p)
+        {
+            location = new Coordinate(p.location);
+            diachi = p.diachi;
+            distance = p.distance;
+            thoigianxeden_luotdi = p.thoigianxeden_luotdi;
+            thoigianxeden_luotve = p.thoigianxeden_luotve;
+            dsdiemcungtoado = new List<point_detail>(p.dsdiemcungtoado.Count);
+            foreach (var pd in p.dsdiemcungtoado)
+            {
+                dsdiemcungtoado.Add(new point_detail(pd));
+            }
+        }
     }
     public class point_detail
     {
         public int id { get; set; }
         public int songuoi { get; set; }
+        public string tennguoidi { get; set; }
         public TimeSpan thoigianden { get; set; }
         public TimeSpan thoigianve { get; set; }
         public TimeSpan[] khungthoigianden { get; set; }
@@ -31,6 +51,33 @@ namespace test_web.Helpers
         public int DangKyLichId { get; set; }
         public string NoiDi { get; set; }
         public string NoiDen { get; set; }
+
+        public point_detail()
+        {
+
+        }
+        public point_detail(point_detail pd)
+        {
+            if (pd != null)
+            {
+                id = pd.id;
+                songuoi = pd.songuoi;
+                tennguoidi = pd.tennguoidi;
+                thoigianden = pd.thoigianden;
+                thoigianve = pd.thoigianve;
+                if (pd.khungthoigianden != null)
+                {
+                    khungthoigianden = new TimeSpan[pd.khungthoigianden.Length];
+                    pd.khungthoigianden.CopyTo(khungthoigianden, 0);
+                    khungthoigianve = new TimeSpan[pd.khungthoigianve.Length];
+                    pd.khungthoigianve.CopyTo(khungthoigianve, 0);
+                }
+                DangKyLichChiTietId = pd.DangKyLichChiTietId;
+                DangKyLichId = pd.DangKyLichId;
+                NoiDi = pd.NoiDi;
+                NoiDen = pd.NoiDen;
+            }
+        }
     }
 
     public class ChuyenDi
@@ -59,6 +106,7 @@ namespace test_web.Helpers
 
         const double eps = 5;   // Kilomet
         const int minPts = 2;
+        TimeSpan Thoigianxechotoida = TimeSpan.FromHours(2);    // khi đón nhân viên tại nơi công tác (lượt về), nếu xe đến sớm thì thời gian tối đa xe chờ là bao nhiêu (giờ)?
 
         public string json1 = "", json2 = "";
         public GomNhom()
@@ -88,10 +136,10 @@ namespace test_web.Helpers
 
             //MiddleCall();
         }
-        void MiddleCall()
-        {
-            ThucHien();
-        }
+        //void MiddleCall()
+        //{
+        //    ThucHien();
+        //}
         public async Task ThucHien()
         {
             var watchh = System.Diagnostics.Stopwatch.StartNew();
@@ -216,10 +264,6 @@ namespace test_web.Helpers
                             {
                                 Coordinate newlocation = new Coordinate(Destination_point[IdPoint].Latitude, Destination_point[IdPoint].Longitude);
 
-                                // thiết lập khung thời gian cho các điểm Destination  
-                                //string[] khungthoigianden = laykhungthoigianden(lichdangky[IdPoint].GioDen, durationmatrix[IdPoint][getDestinationID(IdPoint)]);
-                                //string[] khungthoigianve = laykhungthoigianve(lichdangky[IdPoint].GioVe, durationmatrix[IdPoint][getDestinationID(IdPoint)]);
-
                                 bool isExist = false;
                                 foreach (var point in chuyendi)
                                 {
@@ -228,9 +272,7 @@ namespace test_web.Helpers
                                         isExist = true;
                                         point.dsdiemcungtoado.Add(new point_detail
                                         {
-                                            id = getDestinationID(IdPoint),
-                                            //khungthoigianden = khungthoigianden,
-                                            //khungthoigianve = khungthoigianve
+                                            id = getDestinationID(IdPoint)
                                         });
                                         break;
                                     }
@@ -245,9 +287,7 @@ namespace test_web.Helpers
                                     {
                                         new point_detail
                                         {
-                                            id = getDestinationID(IdPoint),
-                                            //khungthoigianden = khungthoigianden,
-                                            //khungthoigianve = khungthoigianve
+                                            id = getDestinationID(IdPoint)
                                         }
                                     }
                                 });
@@ -377,29 +417,23 @@ namespace test_web.Helpers
                             {
                                 sx(chuyen);
 
-                                Coordinate origin = chuyen[0].location, destination_c1 = chuyen[chuyen.Count - 1].location, destination_c2 = chuyen[chuyen.Count - 2].location;
-
-                                List<Coordinate> waypoints_c1 = new List<Coordinate>(), waypoints_c2 = new List<Coordinate>();
-                                for (int i = 1; i < chuyen.Count - 1; i++)
+                                int sodiem = chuyen.Count;
+                                if (sodiem > 2)
                                 {
-                                    waypoints_c1.Add(chuyen[i].location);
-                                }
+                                    int id1 = chuyen[sodiem - 3].dsdiemcungtoado.First().id;
+                                    int id2 = chuyen[sodiem - 2].dsdiemcungtoado.First().id;
+                                    int id3 = chuyen[sodiem - 1].dsdiemcungtoado.First().id;
 
-                                for (int i = 1; i < chuyen.Count; i++)
-                                {
-                                    if (i == (chuyen.Count - 2))
-                                        continue;
-                                    waypoints_c2.Add(chuyen[i].location);
-                                }
+                                    double dist1 = distancematrix[id1][id2] + distancematrix[id2][id3];
+                                    double dist2 = distancematrix[id1][id3] + distancematrix[id3][id2];
 
-                                double dist1 = await MapFunction.GetDistanceAsync(origin, destination_c1, waypoints_c1), dist2 = await MapFunction.GetDistanceAsync(origin, destination_c2, waypoints_c2);
-
-                                if (dist1 > dist2)
-                                {
-                                    int length = chuyen.Count;
-                                    var temp = chuyen[length - 2];
-                                    chuyen[length - 2] = chuyen[length - 1];
-                                    chuyen[length - 1] = temp;
+                                    if (dist1 > dist2)
+                                    {
+                                        //int length = chuyen.Count;
+                                        var temp = chuyen[sodiem - 2];
+                                        chuyen[sodiem - 2] = chuyen[sodiem - 1];
+                                        chuyen[sodiem - 1] = temp;
+                                    }
                                 }
 
                                 dsChuyenDiTheoDiaDiem.Add(chuyen);
@@ -408,16 +442,10 @@ namespace test_web.Helpers
                     }
                 }
 
-                Console.WriteLine("số kq trước: {0}", DsChuyenDi.Count);
-
                 //phân theo thời gian
-                var watch2 = System.Diagnostics.Stopwatch.StartNew();
-
-                Parallel.ForEach(dsChuyenDiTheoDiaDiem, locthoigian);
-
-                watch2.Stop();
-                var elapsedMs2 = watch2.Elapsed;
-                Console.WriteLine("thời gian phân cụm thời gian: {0}", elapsedMs2);
+                //Parallel.ForEach(dsChuyenDiTheoDiaDiem, locthoigian);
+                locthoigian(dsChuyenDiTheoDiaDiem[0]);
+                locthoigian(dsChuyenDiTheoDiaDiem[1]);
 
                 //thêm các chuyến còn lại
                 for (int id = 0; id < lichdangky.Count; id++)
@@ -434,23 +462,24 @@ namespace test_web.Helpers
             Console.WriteLine("Tổng thời gian thực hiện thuật toán: {0} (s)", elapsedMss.TotalSeconds);
 
             double total = 0;
-            foreach (var chuyenDi in DsChuyenDi)
-            {
-                foreach (var d in chuyenDi.dsDiem)
-                {
-                    foreach (var item in d.dsdiemcungtoado)
-                    {
-                        if (pointIdIsDestination(item))
-                        {
-                            total += Math.Abs(gio_stringToDouble(item.thoigianden) - gio_stringToDouble(d.thoigianxeden_luotdi))
-                                + Math.Abs(gio_stringToDouble(item.thoigianve) - gio_stringToDouble(d.thoigianxeden_luotve));
-                        }
-                    }
 
-                }
-            }
-            double tgchotrungbinh = total / lichdangky.Count;
-            Console.WriteLine("Thời gian chờ trung bình: {0} (h)", tgchotrungbinh);
+            //foreach (var chuyenDi in DsChuyenDi)
+            //{
+            //    foreach (var d in chuyenDi.dsDiem)
+            //    {
+            //        foreach (var item in d.dsdiemcungtoado)
+            //        {
+            //            if (pointIdIsDestination(item))
+            //            {
+            //                total += Math.Abs(gio_stringToDouble(item.thoigianden) - gio_stringToDouble(d.thoigianxeden_luotdi))
+            //                    + Math.Abs(gio_stringToDouble(item.thoigianve) - gio_stringToDouble(d.thoigianxeden_luotve));
+            //            }
+            //        }
+
+            //    }
+            //}
+            //double tgchotrungbinh = total / lichdangky.Count;
+            //Console.WriteLine("Thời gian chờ trung bình: {0} (h)", tgchotrungbinh);
 
             //SoKq = _DsChuyenDi.Count;
             //ChieuCaoListviewKetQua = sokq * ListviewKetQuaRowHeight;
@@ -681,6 +710,7 @@ namespace test_web.Helpers
                 Coordinate OrgLocation = Original_point[OriginID];
                 Coordinate DesLocation = Destination_point[OriginID];
                 int songuoidi = lichdangky[OriginID].SoNguoi.Value;
+                string tennguoidi = lichdangky[OriginID].TenNguoiDi;
                 TimeSpan GioDen = lichdangky[OriginID].GioDen.Value;
                 TimeSpan GioVe = lichdangky[OriginID].GioVe.Value;
                 var khungthoigian = laykhungthoigian(GioDen, GioVe, durationmatrix[OriginID][DestinationID]);
@@ -696,6 +726,7 @@ namespace test_web.Helpers
                     {
                         id = OriginID,
                         songuoi = songuoidi,
+                        tennguoidi = tennguoidi,
                         DangKyLichChiTietId = DangKyLichChiTietId,
                         DangKyLichId = DangKyLichId,
                         NoiDen = NoiDen,
@@ -714,6 +745,7 @@ namespace test_web.Helpers
                     {
                         id = DestinationID,
                         songuoi = songuoidi,
+                        tennguoidi = tennguoidi,
                         thoigianden = GioDen,
                         thoigianve = GioVe,
                         khungthoigianden = khungthoigianden,
@@ -731,6 +763,15 @@ namespace test_web.Helpers
 
                 for (int index = 0; index < dschuyendi.Count; index++)    ////xét từng chuyến đi
                 {
+                    Console.WriteLine("chuyến: " + index);
+                    //if (index == 3)
+                    //{
+                    //    var a = "DSAS";
+                    //}
+                    //if (DestinationID == 17 && index == 1)
+                    //    break;
+                    //if (DestinationID == 23 && index == 0)
+                    //{ var a = 0; }
                     ChuyenDi chuyendi = dschuyendi[index];
                     Xe_v2 xehientai = null;
                     foreach (var xe in dsXe)
@@ -746,12 +787,18 @@ namespace test_web.Helpers
                         Console.WriteLine("xe not found");
                         continue;
                     }
+
                     ChuyenDi copyOfChuyendi = new ChuyenDi
                     {
-                        dsDiem = new List<Point>(chuyendi.dsDiem),
+                        dsDiem = new List<Point>(chuyendi.dsDiem.Count),
                         tongsonguoi = chuyendi.tongsonguoi,
                         xedi = chuyendi.xedi
                     };
+                    chuyendi.dsDiem.ForEach((item) =>
+                    {
+                        copyOfChuyendi.dsDiem.Add(new Point(item));
+                    });
+
                     int vitriOrgTrongChuyenDi = 0;
                     int vitriDesTrongChuyenDi = 0;
 
@@ -773,11 +820,9 @@ namespace test_web.Helpers
                         }
                     }
 
-                    //double tongthoigianduthuathem = 0;
                     bool DaCoToaDoOrigin = false;
                     bool DaCoToaDoDestination = false;
-                    bool OrgCuoiDanhSach = false;
-                    bool DesCuoiDanhSach = false;
+
                     //thêm điểm origin và destination vào list
                     if (chuyendibandau != null)  //thêm điểm dựa vào chuyến đi ban đầu
                     {
@@ -806,7 +851,6 @@ namespace test_web.Helpers
                                     {   //chèn điểm vào trước vị trí Index
                                         if (Index == copyOfChuyendi.dsDiem.Count)
                                         {
-                                            OrgCuoiDanhSach = true;
                                             copyOfChuyendi.dsDiem.Add(orgPoint);
                                         }
                                         else
@@ -825,8 +869,8 @@ namespace test_web.Helpers
                                     {   //location đã trùng -> thêm id vào dsdiemcungtoado
                                         DaCoToaDoDestination = true;
                                         copyOfChuyendi.dsDiem[Index].dsdiemcungtoado.Add(desPoint.dsdiemcungtoado[0]);
-                                        if (Index == copyOfChuyendi.dsDiem.Count - 1)
-                                            DesCuoiDanhSach = true;
+                                        //if (Index == copyOfChuyendi.dsDiem.Count - 1)
+                                        //    DesCuoiDanhSach = true;
                                         DestinationAdded = true;
                                     }
                                     else
@@ -834,7 +878,6 @@ namespace test_web.Helpers
                                         if (Index == copyOfChuyendi.dsDiem.Count)
                                         {
                                             copyOfChuyendi.dsDiem.Add(desPoint);
-                                            DesCuoiDanhSach = true;
                                         }
                                         else
                                             copyOfChuyendi.dsDiem.Insert(Index, desPoint);
@@ -853,445 +896,260 @@ namespace test_web.Helpers
                     }
                     else     // thêm điểm thủ công (khi thêm phải xét khía cạnh địa điểm, phương hướng)
                     {
-                        bool diNguocChieu = false;
-                        for (int i = 0; i < copyOfChuyendi.dsDiem.Count; i++)
-                        {
-                            if (orgPoint.location.IsSame(copyOfChuyendi.dsDiem[i].location))
-                            {
-                                DaCoToaDoOrigin = true;
-                                vitriOrgTrongChuyenDi = i;
-                                copyOfChuyendi.dsDiem[i].dsdiemcungtoado.Add(orgPoint.dsdiemcungtoado.FirstOrDefault());
-                                break;
-                            }
-                            if (orgPoint.location.IsSame(copyOfChuyendi.dsDiem[i + 1].location))
-                                continue;
-                            int vitricogoclonnhat = TimGocLonNhat(copyOfChuyendi.dsDiem[i].location, orgPoint.location, copyOfChuyendi.dsDiem[i + 1].location);
-                            if (vitricogoclonnhat == 3)
-                            {
-                                if (i + 1 == copyOfChuyendi.dsDiem.Count - 1)
-                                {
-                                    OrgCuoiDanhSach = true;
-                                    copyOfChuyendi.dsDiem.Add(orgPoint);
-                                    vitriOrgTrongChuyenDi = i + 2;
-                                    break;
-                                }
-                                continue;
-                            }
-                            if (vitricogoclonnhat == 1)
-                            {
-                                vitriOrgTrongChuyenDi = i;
-                                copyOfChuyendi.dsDiem.Insert(i, orgPoint);
-                                break;
-                            }
-                            if (vitricogoclonnhat == 2)
-                            {
-                                vitriOrgTrongChuyenDi = i + 1;
-                                copyOfChuyendi.dsDiem.Insert(i + 1, orgPoint);
-                                break;
-                            }
-                        }
-                        for (int i = 0; i < copyOfChuyendi.dsDiem.Count; i++)
-                        {
-                            if (desPoint.location.IsSame(copyOfChuyendi.dsDiem[i].location))
-                            {
-                                if (i < vitriOrgTrongChuyenDi)
-                                {
-                                    diNguocChieu = true;
-                                    break;
-                                }
-                                DaCoToaDoDestination = true;
-                                vitriDesTrongChuyenDi = i;
-                                copyOfChuyendi.dsDiem[i].dsdiemcungtoado.Add(desPoint.dsdiemcungtoado.FirstOrDefault());
+                        vitriOrgTrongChuyenDi = themdiemvaods(orgPoint, copyOfChuyendi.dsDiem);
+                        DaCoToaDoOrigin = copyOfChuyendi.dsDiem[vitriOrgTrongChuyenDi].dsdiemcungtoado.Count > 1;
 
-                                if (i == copyOfChuyendi.dsDiem.Count - 1)
-                                    DesCuoiDanhSach = true;
-                                break;
-                            }
-                            if (desPoint.location.IsSame(copyOfChuyendi.dsDiem[i + 1].location))
-                                continue;
-                            int vitricogoclonnhat = TimGocLonNhat(copyOfChuyendi.dsDiem[i].location, desPoint.location, copyOfChuyendi.dsDiem[i + 1].location);
-                            if (vitricogoclonnhat == 3)
-                            {
-                                if (i + 1 == copyOfChuyendi.dsDiem.Count - 1)
-                                {
-                                    copyOfChuyendi.dsDiem.Add(desPoint);
-                                    DesCuoiDanhSach = true;
-                                    vitriDesTrongChuyenDi = copyOfChuyendi.dsDiem.Count - 1;
-                                    break;
-                                }
-                                continue;
-                            }
-                            if (vitricogoclonnhat == 1)
-                            {
-                                if (i <= vitriOrgTrongChuyenDi)
-                                {
-                                    diNguocChieu = true;
-                                    break;
-                                }
-                                copyOfChuyendi.dsDiem.Insert(i, desPoint);
-                                vitriDesTrongChuyenDi = i;
-                                break;
-                            }
-                            if (vitricogoclonnhat == 2)
-                            {
-                                if (i + 1 < vitriOrgTrongChuyenDi)
-                                {
-                                    diNguocChieu = true;
-                                    break;
-                                }
-                                copyOfChuyendi.dsDiem.Insert(i + 1, desPoint);
-                                vitriDesTrongChuyenDi = i + 1;
-                                break;
-                            }
-                        }
-                        if (diNguocChieu)
+                        vitriDesTrongChuyenDi = themdiemvaods(desPoint, copyOfChuyendi.dsDiem);
+                        DaCoToaDoDestination = copyOfChuyendi.dsDiem[vitriDesTrongChuyenDi].dsdiemcungtoado.Count > 1;
+
+                        if (vitriDesTrongChuyenDi <= vitriOrgTrongChuyenDi)
                         {
                             Console.WriteLine("đi ngc chiều.");
                             continue;
                         }
                     }
 
+
+                    int themdiemvaods(Point point, List<Point> dsDiem)
+                    {
+                        int id = point.dsdiemcungtoado.FirstOrDefault().id;
+                        double? min = null;
+                        int ind = 0;
+                        for (int i = 0; i < dsDiem.Count; i++)
+                        {
+                            if (i == 0 && point.location.IsSame(dsDiem[i].location))
+                            {
+                                dsDiem[i].dsdiemcungtoado.Add(point.dsdiemcungtoado.FirstOrDefault());
+                                return i;
+                            }
+                            if (i != dsDiem.Count - 1 && point.location.IsSame(dsDiem[i + 1].location))
+                            {
+                                dsDiem[i + 1].dsdiemcungtoado.Add(point.dsdiemcungtoado.FirstOrDefault());
+                                return i + 1;
+                            }
+                            int id1 = dsDiem[i].dsdiemcungtoado.FirstOrDefault().id;
+                            double fee = distancematrix[id1][id];
+                            if (i != dsDiem.Count - 1)
+                            {
+                                int id2 = dsDiem[i + 1].dsdiemcungtoado.FirstOrDefault().id;
+                                fee += distancematrix[id][id2] - distancematrix[id1][id2];
+                            }
+                            if (!min.HasValue)
+                                min = fee;
+                            if (fee < min)
+                            {
+                                min = fee;
+                                ind = i + 1;
+                            }
+                        }
+                        if (ind == dsDiem.Count)
+                            dsDiem.Add(point);
+                        else
+                            dsDiem.Insert(ind, point);
+
+                        return ind;
+                    }
+
                     int sodiem = copyOfChuyendi.dsDiem.Count;
 
-                    ////lấy thời gian đi của mọi người đi xe
-                    //double tgtruoc = 0, tgsau = 0;    // tổng thời gian trên chuyến đi của tất cả nhân viên
-                    //int songuoitrenxe_truoc = 0, songuoitrenxe_sau = 0;
-                    //int iddiemtruoc = 0;
+                    bool chapnhanthem = true;
 
-                    //for (int ind = 0; ind < sodiem; ind++)
-                    //{
-                    //    if (ind == vitriOrgTrongChuyenDi || ind == vitriDesTrongChuyenDi)
-                    //    {
-                    //        if (copyOfChuyendi.dsDiem[ind].dsdiemcungtoado.Count == 1)    //điểm chứa origin chưa tồn tại từ trước
-                    //        {
-                    //            iddiemtruoc = tgtruoc == 0 ? copyOfChuyendi.dsDiem[ind + 1].dsdiemcungtoado[0].id : copyOfChuyendi.dsDiem[ind - 1].dsdiemcungtoado[0].id;
-                    //            tgsau += ind == 0 ? 0 : songuoitrenxe_sau * durationmatrix[copyOfChuyendi.dsDiem[ind - 1].dsdiemcungtoado[0].id][copyOfChuyendi.dsDiem[ind].dsdiemcungtoado[0].id];
-                    //            songuoitrenxe_sau += ind == vitriOrgTrongChuyenDi ? 1 : -1;
-                    //        }
-                    //        else
-                    //        {
-                    //            tgtruoc += ind == 0 ? 0 : songuoitrenxe_truoc * durationmatrix[iddiemtruoc][copyOfChuyendi.dsDiem[ind].dsdiemcungtoado[0].id];
-                    //            tgsau += ind == 0 ? 0 : songuoitrenxe_sau * durationmatrix[copyOfChuyendi.dsDiem[ind - 1].dsdiemcungtoado[0].id][copyOfChuyendi.dsDiem[ind].dsdiemcungtoado[0].id];
-                    //            foreach (var pointdetail in copyOfChuyendi.dsDiem[ind].dsdiemcungtoado)
-                    //            {
-                    //                songuoitrenxe_truoc += pointIdIsOrigrin(pointdetail) ? (pointdetail.id == OriginID ? 0 : 1) : (pointdetail.id == DestinationID ? 0 : -1);
-                    //                songuoitrenxe_sau += pointIdIsOrigrin(pointdetail) ? 1 : -1;
-                    //            }
-
-                    //            iddiemtruoc = copyOfChuyendi.dsDiem[ind].dsdiemcungtoado[0].id;
-                    //        }
-                    //    }
-                    //    else
-                    //    {
-                    //        tgtruoc += ind == 0 ? 0 : songuoitrenxe_truoc * durationmatrix[iddiemtruoc][copyOfChuyendi.dsDiem[ind].dsdiemcungtoado[0].id];
-                    //        tgsau += ind == 0 ? 0 : songuoitrenxe_sau * durationmatrix[copyOfChuyendi.dsDiem[ind - 1].dsdiemcungtoado[0].id][copyOfChuyendi.dsDiem[ind].dsdiemcungtoado[0].id];
-                    //        foreach (var pointdetail in copyOfChuyendi.dsDiem[ind].dsdiemcungtoado)
-                    //        {
-                    //            songuoitrenxe_truoc += pointIdIsOrigrin(pointdetail) ? 1 : -1;
-                    //            songuoitrenxe_sau += pointIdIsOrigrin(pointdetail) ? 1 : -1;
-                    //        }
-
-                    //        iddiemtruoc = copyOfChuyendi.dsDiem[ind].dsdiemcungtoado[0].id;
-                    //    }
-
-                    //    //foreach (var pointdetail in copyOfChuyendi.dsDiem[ind].dsdiemcungtoado)
-                    //    //{
-                    //    //    foreach (var item in dsnguoichuaden)
-                    //    //    {
-                    //    //        dsthoigiandi[item] += durationmatrix[ind - 1][ind];
-                    //    //    }
-                    //    //    if (pointIdIsOrigrin(pointdetail))  //origin
-                    //    //    {
-                    //    //        dsnguoichuaden.Add(pointdetail.id);
-                    //    //        dsthoigiandi.Add(pointdetail.id, 0.0);
-                    //    //    }
-                    //    //    else    //destination
-                    //    //    {
-                    //    //        for (int i = 0; i < dsnguoichuaden.Count; i++)
-                    //    //        {
-                    //    //            if (dsnguoichuaden[i] == getOriginID(pointdetail.id))
-                    //    //                dsnguoichuaden.RemoveAt(i);
-                    //    //        }
-                    //    //    }
-                    //    //}
-
-                    //}
-                    //Console.WriteLine("tg trước: {0}, tg sau: {1}", tgtruoc, tgsau);
-                    //double delta = tgsau - tgtruoc;
-
-                    bool dieukien1 = true;  //dieukien1: chuyến đi này khi thêm vào không ảnh hưởng giờ giấc lượt đi của những chuyến khác trong list
-                    bool dieukien2 = true;  //dieukien2: chuyến đi này khi thêm vào không ảnh hưởng giờ giấc lượt về của những chuyến khác trong list
-
-                    var TaskList = new List<Task>();
-
-                    //xét điều kiện 1       //KIỂM TRA LẠI ĐK 1
-
-                    int idTruocOrg = vitriOrgTrongChuyenDi == 0 ? -1 : copyOfChuyendi.dsDiem[vitriOrgTrongChuyenDi - 1].dsdiemcungtoado[0].id;
-                    int idSauOrg = copyOfChuyendi.dsDiem[vitriOrgTrongChuyenDi + 1].dsdiemcungtoado[0].id;
-                    int idTruocDes = copyOfChuyendi.dsDiem[vitriDesTrongChuyenDi - 1].dsdiemcungtoado[0].id;
-                    int idSauDes = vitriDesTrongChuyenDi == sodiem - 1 ? -1 : copyOfChuyendi.dsDiem[vitriDesTrongChuyenDi + 1].dsdiemcungtoado[0].id;
-                    double thoigianthembot_Org = (DaCoToaDoOrigin || vitriOrgTrongChuyenDi == 0 || vitriOrgTrongChuyenDi == sodiem - 2) ? 0 : (double)(duration_in_traffic_matrix[idTruocOrg][OriginID] + duration_in_traffic_matrix[OriginID][idSauOrg] - duration_in_traffic_matrix[idTruocOrg][idSauOrg]) / 60;
-                    double thoigianthembot_Des = (DaCoToaDoDestination || vitriDesTrongChuyenDi == 1 || vitriDesTrongChuyenDi == sodiem - 1) ? 0 : (double)(duration_in_traffic_matrix[idTruocDes][DestinationID] + duration_in_traffic_matrix[DestinationID][idSauDes] - duration_in_traffic_matrix[idTruocDes][idSauDes]) / 60;
-
-                    bool timthayvitriOrg = false;
-
-                    TimeSpan tgxd = new TimeSpan(0), mintime = new TimeSpan(0), maxtime = new TimeSpan(0);
-                    int vitri = -1;
-                    for (int i = 0; i < sodiem; i++)
+                    CancellationTokenSource cts = new CancellationTokenSource();
+                    CancellationToken ct = cts.Token;
+                    ct.Register(() =>
                     {
-                        bool breakRequest = false;
-                        if (i == vitriOrgTrongChuyenDi)
-                        {
-                            timthayvitriOrg = true;
-                            continue;   //bỏ điểm hiện tại, xét điểm tiếp theo
-                        }
+                        Console.WriteLine("Token is canceled");
+                    });
 
-                        if (i < vitriDesTrongChuyenDi)
+                    Task luotdi = Task.Run(() =>
+                    {
+                        TimeSpan tgxuatphatThaydoi1 = new TimeSpan(0);
+                        int solankiemtra = 0;
+                        bool breakwhileloop = false;
+                        while (!breakwhileloop)
                         {
-                            foreach (var pointdetail in copyOfChuyendi.dsDiem[i].dsdiemcungtoado)
+                            solankiemtra++;
+                            bool thoayeucau = true;
+                            for (int j = 0; j < sodiem; j++)
                             {
-                                if (pointIdIsOrigrin(pointdetail))
-                                    continue;
-                                tgxd = copyOfChuyendi.dsDiem[i].thoigianxeden_luotve;
-                                mintime = pointdetail.khungthoigianve[0];
-                                maxtime = pointdetail.khungthoigianve[1];
-
-                                vitri = i;
-                            }
-                        }
-
-                        //if (i == vitriDesTrongChuyenDi)
-                        //{
-                        //    timthayvitriDes = true;
-                        //    continue;   //bỏ điểm hiện tại, xét điểm tiếp theo
-                        //}
-                        //if (timthayvitriDes)
-                        //{
-                        //    continue;
-                        //}
-                        if (!timthayvitriOrg)
-                        {
-                            //cập nhật thời gian xe đến (lượt về) (vì khi thêm điểm origin làm thời gian về của các điểm destination trước điểm origin này bị trễ hoặc sớm)
-                            var tgxd_truockhithem = copyOfChuyendi.dsDiem[i].thoigianxeden_luotve;
-                            var tgxd_saukhithem = tgxd_truockhithem.Add(TimeSpan.FromMinutes(thoigianthembot_Org + thoigianthembot_Des));
-                            copyOfChuyendi.dsDiem[i].thoigianxeden_luotve = tgxd_saukhithem;
-                        }
-                        else
-                        {
-                            //if (DaCoToaDoOrigin)
-                            //    continue;
-                            //xét đk giờ lượt đi
-                            foreach (var pointdetail in copyOfChuyendi.dsDiem[i].dsdiemcungtoado)
-                            {
-                                /*dán đk  "&& pointdetail.id != DestinationID"  */  // đã xử lý
-                                if (pointIdIsDestination(pointdetail))  //tìm kiếm điểm Destination trong các điểm nằm sau vị trí điểm Origin
+                                if (ct.IsCancellationRequested)
+                                    return;
+                                TimeSpan gioxeden = new TimeSpan(0);
+                                if (j == 0)
                                 {
-
-                                    // nếu sau khi thêm mà tgxd điểm này thấp hơn thời gian dưới thì tgxuatphat sẽ sớm hơn để đáp ứng nó
-                                    // nếu tgxd điểm này lớn hơn thời gian trên thì tgxuatphat sẽ phải muộn hơn
-                                    // nếu không thì không thay đổi thời gian xuất phát
-                                    TimeSpan tgxuatphatThaydoi1 = new TimeSpan(0);
-                                    if (DesCuoiDanhSach)
+                                    if (j == vitriOrgTrongChuyenDi && !DaCoToaDoOrigin && solankiemtra == 1)
                                     {
-                                        TimeSpan tgxd_diemcuoi = copyOfChuyendi.dsDiem[sodiem - 1].dsdiemcungtoado.Count > 1 ?  //Des nằm cuối và điểm này đã có từ trước
-                                            copyOfChuyendi.dsDiem[sodiem - 1].thoigianxeden_luotdi
-                                            : (vitriOrgTrongChuyenDi == vitriDesTrongChuyenDi - 1 && !DaCoToaDoOrigin) ?        //Điểm des và org chưa có trước và org nằm liền trước des
-                                                copyOfChuyendi.dsDiem[sodiem - 3].thoigianxeden_luotdi.Add(TimeSpan.FromMinutes((double)(duration_in_traffic_matrix[copyOfChuyendi.dsDiem[sodiem - 3].dsdiemcungtoado[0].id][OriginID]) / 60 + (double)(duration_in_traffic_matrix[OriginID][DestinationID]) / 60))
-                                                : copyOfChuyendi.dsDiem[sodiem - 2].thoigianxeden_luotdi.Add(TimeSpan.FromMinutes((double)(duration_in_traffic_matrix[copyOfChuyendi.dsDiem[sodiem - 2].dsdiemcungtoado[0].id][DestinationID]) / 60));
+                                        var id0 = copyOfChuyendi.dsDiem[0].dsdiemcungtoado[0].id;
+                                        var id1 = copyOfChuyendi.dsDiem[1].dsdiemcungtoado[0].id;
+                                        var id2 = copyOfChuyendi.dsDiem[2].dsdiemcungtoado[0].id;
 
-                                        tgxuatphatThaydoi1 = khungthoigianden[0] > tgxd_diemcuoi ? khungthoigianden[0] - tgxd_diemcuoi
-                                                : (khungthoigianden[1] < tgxd_diemcuoi ? khungthoigianden[1] - tgxd_diemcuoi : new TimeSpan(0));
-                                    }
-                                    else
-                                    {
-                                        TimeSpan tgxd_truockhithem = copyOfChuyendi.dsDiem[i].thoigianxeden_luotdi;
-                                        TimeSpan tgxd_saukhithem = tgxd_truockhithem.Add(TimeSpan.FromMinutes(thoigianthembot_Org));
-                                        if (i > vitriDesTrongChuyenDi)
-                                            tgxd_saukhithem = tgxd_saukhithem.Add(TimeSpan.FromMinutes(thoigianthembot_Des));
-
-                                        TimeSpan thoigianduoi = pointdetail.khungthoigianden[0];
-                                        TimeSpan thoigiantren = pointdetail.khungthoigianden[1];
-
-                                        tgxuatphatThaydoi1 = thoigianduoi > tgxd_saukhithem ? thoigianduoi - tgxd_saukhithem : (thoigiantren < tgxd_saukhithem ? thoigiantren - tgxd_saukhithem : new TimeSpan(0));
-                                    }
-
-                                    double thoigianthembot1 = 0;
-                                    double thoigianthembot2 = thoigianthembot_Org + thoigianthembot_Des;
-
-                                    TimeSpan thoigianxecho = khungthoigianve[1] - khungthoigianve[0]; //thoigianxecho bằng thời gian lệch tối đa của chuyến đi
-                                    tgxd.Add(TimeSpan.FromMinutes(thoigianthembot_Des));
-                                    tgxd.Add(TimeSpan.FromMinutes(vitriOrgTrongChuyenDi == sodiem - 2 ? 0 : vitri < vitriOrgTrongChuyenDi ? thoigianthembot_Org : 0));
-
-                                    TimeSpan tgxuatphatThaydoi2 = new TimeSpan(0);
-                                    if (DesCuoiDanhSach)
-                                    {
-                                        TimeSpan tgxd_diemcuoi = copyOfChuyendi.dsDiem[sodiem - 1].dsdiemcungtoado.Count > 1 ? //điểm destination đã tồn tại
-                                            copyOfChuyendi.dsDiem[sodiem - 1].thoigianxeden_luotve
-                                            : (vitriOrgTrongChuyenDi == vitriDesTrongChuyenDi - 1 && !DaCoToaDoOrigin) ?
-                                                copyOfChuyendi.dsDiem[sodiem - 3].thoigianxeden_luotve.Add(TimeSpan.FromMinutes(-(double)(duration_in_traffic_matrix[copyOfChuyendi.dsDiem[sodiem - 3].dsdiemcungtoado[0].id][OriginID]) / 60 - (double)(duration_in_traffic_matrix[OriginID][DestinationID]) / 60))
-                                                : copyOfChuyendi.dsDiem[sodiem - 2].thoigianxeden_luotve.Add(TimeSpan.FromMinutes(-(double)(duration_in_traffic_matrix[copyOfChuyendi.dsDiem[sodiem - 2].dsdiemcungtoado[0].id][DestinationID]) / 60));
-
-                                        tgxuatphatThaydoi2 = tgxd_diemcuoi < khungthoigianve[0] ? khungthoigianve[0] - tgxd_diemcuoi : new TimeSpan(0);
-                                        if (tgxuatphatThaydoi2.TotalMinutes == 0)
-                                            if (copyOfChuyendi.dsDiem[sodiem - 1].dsdiemcungtoado.Count == 1)
-                                                copyOfChuyendi.dsDiem[sodiem - 2].thoigianxeden_luotve = khungthoigianve[0].Add(TimeSpan.FromMinutes((double)duration_in_traffic_matrix[DestinationID][copyOfChuyendi.dsDiem[sodiem - 2].dsdiemcungtoado[0].id] / 60));
-                                        //else
-                                        //    copyOfChuyendi.dsDiem[sodiem - 1].thoigianxeden_luotve = khungthoigianve[0];
-                                    }
-                                    else
-                                    {
-                                        if (vitri == -1)     //destination này là des cuối cùng trong list (theo hướng đi về)
+                                        if (j + 1 == vitriDesTrongChuyenDi && !DaCoToaDoDestination)
                                         {
-                                            TimeSpan tgxd_diemcuoi = copyOfChuyendi.dsDiem[1].dsdiemcungtoado.Count > 1 ? //điểm destination đã tồn tại
-                                                copyOfChuyendi.dsDiem[1].thoigianxeden_luotve
-                                                : copyOfChuyendi.dsDiem[2].thoigianxeden_luotve.Add(TimeSpan.FromMinutes((double)(duration_in_traffic_matrix[DestinationID][copyOfChuyendi.dsDiem[2].dsdiemcungtoado[0].id]) / 60));
-
-                                            tgxuatphatThaydoi2 = tgxd_diemcuoi > khungthoigianve[1] ? khungthoigianve[1] - tgxd_diemcuoi : new TimeSpan(0);
+                                            gioxeden = copyOfChuyendi.dsDiem[j + 2].thoigianxeden_luotdi;
+                                            gioxeden = gioxeden.Add(TimeSpan.FromMinutes(-((double)duration_in_traffic_matrix[id0][id1] + (double)duration_in_traffic_matrix[id1][id2]) / 60 ));
                                         }
                                         else
-                                            tgxuatphatThaydoi2 = mintime > tgxd ? mintime - tgxd : (maxtime < tgxd ? maxtime - tgxd : new TimeSpan(0));
+                                        {
+                                            gioxeden = copyOfChuyendi.dsDiem[j + 1].thoigianxeden_luotdi;
+                                            gioxeden = gioxeden.Add(TimeSpan.FromMinutes(-(double)duration_in_traffic_matrix[id0][id1] / 60));
+                                        }
                                     }
-
-                                    TimeSpan tgdagiulai = new TimeSpan(0);
-                                    TimeSpan tgxpthaydoiconlai = tgxuatphatThaydoi2;
-                                    int taskcapnhatgiove = 0;
-                                    for (int j = 0; j < sodiem; j++)  //lặp lại chuyến đi để xét dk1 và lưu task cho dk2
+                                    else
                                     {
-                                        if ((j == vitriOrgTrongChuyenDi && !DaCoToaDoOrigin) || (j == vitriDesTrongChuyenDi && !DaCoToaDoDestination))
-                                        {
-                                            if (j == vitriOrgTrongChuyenDi)
-                                            {
-                                                TimeSpan tgxd_luotdi = j != 0 ? copyOfChuyendi.dsDiem[j - 1].thoigianxeden_luotdi.Add(TimeSpan.FromMinutes((double)(duration_in_traffic_matrix[copyOfChuyendi.dsDiem[j - 1].dsdiemcungtoado[0].id][OriginID]) / 60)) :
-                                                    (j + 1 == vitriDesTrongChuyenDi && !DaCoToaDoDestination) ?
-                                                        copyOfChuyendi.dsDiem[j + 2].thoigianxeden_luotdi.Add(TimeSpan.FromMinutes(-(double)(duration_in_traffic_matrix[DestinationID][copyOfChuyendi.dsDiem[i + 2].dsdiemcungtoado[0].id] + duration_in_traffic_matrix[OriginID][DestinationID]) / 60))
-                                                        : copyOfChuyendi.dsDiem[j + 1].thoigianxeden_luotdi.Add(TimeSpan.FromMinutes(-(double)(duration_in_traffic_matrix[OriginID][copyOfChuyendi.dsDiem[j + 1].dsdiemcungtoado[0].id]) / 60));
-                                                copyOfChuyendi.dsDiem[j].thoigianxeden_luotdi = tgxd_luotdi;
-
-                                                TimeSpan tgxd_luotve = j == sodiem - 2 ?
-                                                    copyOfChuyendi.dsDiem[sodiem - 3].thoigianxeden_luotve.Add(TimeSpan.FromMinutes(-(double)(duration_in_traffic_matrix[copyOfChuyendi.dsDiem[sodiem - 3].dsdiemcungtoado[0].id][OriginID]) / 60))
-                                                    : copyOfChuyendi.dsDiem[j + 1].thoigianxeden_luotve.Add(TimeSpan.FromMinutes((double)(duration_in_traffic_matrix[copyOfChuyendi.dsDiem[j + 1].dsdiemcungtoado[0].id][OriginID]) / 60));
-                                                copyOfChuyendi.dsDiem[j].thoigianxeden_luotve = tgxd_luotve;
-
-                                                thoigianthembot2 -= thoigianthembot_Org;
-
-                                                continue;
-                                            }
-                                            if (j == vitriDesTrongChuyenDi)
-                                            {
-                                                TimeSpan tgxd_luotdi = copyOfChuyendi.dsDiem[j - 1].thoigianxeden_luotdi.Add(TimeSpan.FromMinutes((double)(duration_in_traffic_matrix[copyOfChuyendi.dsDiem[j - 1].dsdiemcungtoado[0].id][DestinationID]) / 60));
-
-                                                copyOfChuyendi.dsDiem[j].thoigianxeden_luotdi = tgxd_luotdi;
-
-                                                thoigianthembot2 -= thoigianthembot_Des;
-
-                                                continue;
-                                            }
-                                        }
-
-                                        TimeSpan tgxd_luotdi_truockhithem = copyOfChuyendi.dsDiem[j].thoigianxeden_luotdi;
-                                        TimeSpan tgxd_luotdi_saukhithem = tgxd_luotdi_truockhithem.Add(tgxuatphatThaydoi1).Add(TimeSpan.FromMinutes(thoigianthembot1));
-                                        copyOfChuyendi.dsDiem[j].thoigianxeden_luotdi = tgxd_luotdi_saukhithem;
-
-                                        TimeSpan tgxd_luotve_truockhithem = copyOfChuyendi.dsDiem[j].thoigianxeden_luotve;
-                                        TimeSpan tgxd_luotve_saukhithem = tgxd_luotve_truockhithem.Add(tgxuatphatThaydoi2).Add(TimeSpan.FromMinutes(thoigianthembot2));
-                                        //copyOfChuyendi.dsDiem[j].thoigianxeden_luotve = gio_doubleToString(tgxd_luotve_saukhithem);
-                                        int ind = j;
-                                        foreach (point_detail pointdetail1 in copyOfChuyendi.dsDiem[j].dsdiemcungtoado)
-                                        {
-                                            if (pointIdIsDestination(pointdetail1))
-                                            {
-                                                //Console.WriteLine("lượt đi. iD: {0}, khung thời gian về: [{1}, {2}]", pointdetail1.id, pointdetail1.khungthoigianve[0], pointdetail1.khungthoigianve[1]);
-                                                //tongthoigianduthuathem += tgxd_luotdi_truockhithem - tgxd_luotdi_saukhithem;     //
-                                                //tongthoigianduthuathem += tgxd_luotve_saukhithem - tgxd_luotve_truockhithem;
-
-                                                //check ddk lượt đi
-                                                TimeSpan min = pointdetail1.khungthoigianden[0];
-                                                TimeSpan max = pointdetail1.khungthoigianden[1];
-                                                if (tgxd_luotdi_saukhithem < min || tgxd_luotdi_saukhithem > max)   //không thỏa
-                                                {
-                                                    dieukien1 = false;
-                                                    breakRequest = true;
-                                                    break;
-                                                }
-                                            }
-
-                                            /////// lưu task điều kiện thời gian lượt về
-                                            var task = new Task(() =>
-                                            {
-                                                if (ind != taskcapnhatgiove)
-                                                {
-                                                    //if (pointIdIsDestination(pointdetail1))
-                                                    //{
-                                                    //    thoigianxedoi += tgxd_luotve_saukhithem < gio_stringToDouble(pointdetail1.khungthoigianve[0]) ?
-                                                    //        gio_stringToDouble(pointdetail1.khungthoigianve[0]) - tgxd_luotve_saukhithem : 0;
-                                                    //}
-
-                                                    //tgxd_luotve_saukhithem += thoigianxedoi;
-
-                                                    tgxd_luotve_saukhithem -= tgdagiulai;
-
-                                                    TimeSpan thoigianxedoi = (pointIdIsOrigrin(pointdetail1) || pointdetail1.khungthoigianve[0] <= tgxd_luotve_saukhithem) ? new TimeSpan(0) :
-                                                        pointdetail1.khungthoigianve[0] - tgxd_luotve_saukhithem;
-
-                                                    tgdagiulai += thoigianxedoi <= tgxpthaydoiconlai ? thoigianxedoi : tgxpthaydoiconlai;
-                                                    tgxpthaydoiconlai -= thoigianxedoi <= tgxpthaydoiconlai ? thoigianxedoi : tgxpthaydoiconlai;
-
-                                                    copyOfChuyendi.dsDiem[ind].thoigianxeden_luotve = tgxd_luotve_saukhithem;
-                                                    taskcapnhatgiove = ind;
-                                                }
-
-                                                //Console.WriteLine("task {0} đag thực thi", ind);
-                                                //// có 2 đk: tg đến của xe phải nhỏ hơn khungthoigianve[1], tg xe chờ phải nhỏ hơn tg chờ nhỏ nhất của những người trên xe
-                                                //Console.WriteLine("lượt về. iD: {0}, khung thời gian về: [{1}, {2}]", pointdetail1.id, pointdetail1.khungthoigianve[0], pointdetail1.khungthoigianve[1]);
-
-                                                if (pointIdIsDestination(pointdetail1))
-                                                {
-                                                    if (tgxd_luotve_saukhithem > pointdetail1.khungthoigianve[1] || pointdetail1.khungthoigianve[0] - tgxd_luotve_saukhithem > thoigianxecho)
-                                                    {
-                                                        dieukien2 = false;
-                                                    }
-
-                                                    //nếu điểm này thỏa thì cập nhật thoigianxecho
-                                                    TimeSpan thoigianlechtoida = pointdetail1.khungthoigianve[1] - pointdetail1.khungthoigianve[0];
-                                                    thoigianxecho = thoigianlechtoida < thoigianxecho ? thoigianlechtoida : thoigianxecho;
-                                                }
-
-                                            });
-                                            TaskList.Add(task);
-                                            // end task
-
-                                        }
-                                        if (breakRequest)
-                                            break;
-                                        if (j == vitriOrgTrongChuyenDi)
-                                            thoigianthembot1 += thoigianthembot_Org;
-                                        if (j == vitriDesTrongChuyenDi)
-                                            thoigianthembot1 += thoigianthembot_Des;
+                                        gioxeden = copyOfChuyendi.dsDiem[0].thoigianxeden_luotdi;
                                     }
-                                    //đến đây thì tất cả điểm đã thỏa mãn giờ thay đổi (tgxuatphatthaydoi) => thoát ra và điều kiện 1 thỏa
-                                    breakRequest = true;
-                                    break;  //chỉ xét 1 lần, thỏa hay không đều thoát
+                                    if (solankiemtra == 2)
+                                        gioxeden.Add(tgxuatphatThaydoi1);
                                 }
+                                else
+                                {
+                                    var id_truoc = copyOfChuyendi.dsDiem[j - 1].dsdiemcungtoado[0].id;
+                                    var id = copyOfChuyendi.dsDiem[j].dsdiemcungtoado[0].id;
+                                    gioxeden = copyOfChuyendi.dsDiem[j - 1].thoigianxeden_luotdi;
+                                    gioxeden = gioxeden.Add(TimeSpan.FromMinutes((double)duration_in_traffic_matrix[id_truoc][id] / 60));
+                                }
+                                //gioxeden = Math.Round(gioxeden, 1);
+                                copyOfChuyendi.dsDiem[j].thoigianxeden_luotdi = gioxeden;
+                                foreach (var pointdetail1 in copyOfChuyendi.dsDiem[j].dsdiemcungtoado)
+                                {
+                                    if (pointIdIsDestination(pointdetail1))
+                                    {
+                                        var min = pointdetail1.khungthoigianden[0];
+                                        var max = pointdetail1.khungthoigianden[1];
+
+                                        if ((gioxeden < min || gioxeden > max) && solankiemtra == 2)
+                                        {
+                                            chapnhanthem = false;
+                                            cts.Cancel();
+                                            break;
+                                        }
+
+                                        if (gioxeden < min && tgxuatphatThaydoi1 < min - gioxeden)  // tìm thời gian sớm hơn lớn nhất
+                                        {
+                                            thoayeucau = false;
+                                            tgxuatphatThaydoi1 = min - gioxeden;
+                                        }
+                                        if (gioxeden > max && tgxuatphatThaydoi1 > max - gioxeden)  // tìm thời gian lùi lớn nhất
+                                        {
+                                            thoayeucau = false;
+                                            tgxuatphatThaydoi1 = max - gioxeden;
+                                        }
+                                    }
+                                }
+                                if (!chapnhanthem)
+                                    break;
                             }
+                            if (thoayeucau || !chapnhanthem)
+                                breakwhileloop = true;
                         }
-                        if (breakRequest)
-                            break;
-                    }
-                    //}
-                    if (!dieukien1)
-                    {
-                        continue;   //xét chuyến đi khác, nếu không có chuyến đi nào thỏa mãn thì nhảy đến (1)
-                    }
+                    });
 
-                    //xét tiếp điều kiện 2
-                    for (int i = TaskList.Count - 1; i >= 0; i--)
+                    Task luotve = Task.Run(() =>
                     {
-                        TaskList[i].RunSynchronously();
-                        if (!dieukien2)
-                            break;
-                    }
+                        TimeSpan tgxuatphatThaydoi = new TimeSpan(0);
+                        int solankiemtra = 0;
+                        bool breakwhileloop = false;
+                        while (!breakwhileloop)
+                        {
+                            solankiemtra++;
+                            bool thoayeucau = true;
+                            TimeSpan thoigianxecho = new TimeSpan(0);
+                            //double xecho = 0;
 
-                    if (!dieukien2)
+                            for (int j = sodiem - 1; j >= 0; j--)
+                            {
+                                if (ct.IsCancellationRequested)
+                                    return;
+                                TimeSpan gioxeden = new TimeSpan(0);
+                                if (j == sodiem - 1)
+                                {
+                                    if (j == vitriDesTrongChuyenDi && !DaCoToaDoDestination && solankiemtra == 1)
+                                    {
+                                        var id0 = copyOfChuyendi.dsDiem[sodiem - 1].dsdiemcungtoado[0].id;
+                                        var id1 = copyOfChuyendi.dsDiem[sodiem - 2].dsdiemcungtoado[0].id;
+                                        var id2 = copyOfChuyendi.dsDiem[sodiem - 3].dsdiemcungtoado[0].id;
+
+                                        if (j - 1 == vitriOrgTrongChuyenDi && !DaCoToaDoOrigin)
+                                        {
+                                            gioxeden = copyOfChuyendi.dsDiem[j - 2].thoigianxeden_luotve;
+                                            gioxeden = gioxeden.Add(TimeSpan.FromMinutes(-((double)duration_in_traffic_matrix[id0][id1] + (double)duration_in_traffic_matrix[id1][id2]) / 60));
+                                        }
+                                        else
+                                        {
+                                            gioxeden = copyOfChuyendi.dsDiem[j - 1].thoigianxeden_luotve;
+                                            gioxeden = gioxeden.Add(TimeSpan.FromMinutes(-(double)duration_in_traffic_matrix[id0][id1] / 60));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        gioxeden = copyOfChuyendi.dsDiem[sodiem - 1].thoigianxeden_luotve;
+                                    }
+                                    if (solankiemtra == 2)
+                                        gioxeden += tgxuatphatThaydoi;
+                                }
+                                else
+                                {
+                                    var id_truoc = copyOfChuyendi.dsDiem[j + 1].dsdiemcungtoado[0].id;
+                                    var id = copyOfChuyendi.dsDiem[j].dsdiemcungtoado[0].id;
+                                    gioxeden = copyOfChuyendi.dsDiem[j + 1].thoigianxeden_luotve;
+                                    gioxeden = gioxeden.Add(thoigianxecho);
+                                    gioxeden = gioxeden.Add(TimeSpan.FromMinutes((double)duration_in_traffic_matrix[id_truoc][id] / 60));
+
+                                    thoigianxecho = new TimeSpan(0);
+                                }
+                                //gioxeden = Math.Round(gioxeden, 1);
+                                foreach (var pointdetail1 in copyOfChuyendi.dsDiem[j].dsdiemcungtoado)
+                                {
+                                    if (pointIdIsDestination(pointdetail1))
+                                    {
+                                        var min = pointdetail1.khungthoigianve[0];
+                                        var max = pointdetail1.khungthoigianve[1];
+
+                                        if ((min - gioxeden > Thoigianxechotoida || gioxeden > max) && solankiemtra == 2)
+                                        {
+                                            chapnhanthem = false;
+                                            cts.Cancel();
+                                            break;
+                                        }
+
+                                        if (gioxeden < min)
+                                        {
+                                            thoigianxecho = min - gioxeden > thoigianxecho ? min - gioxeden : thoigianxecho;
+                                            //if (j == sodiem - 1)
+                                            //    xecho = thoigianxecho;
+                                            if (thoigianxecho > Thoigianxechotoida && j != sodiem - 1)  // thời gian chờ lớn nhất
+                                            {
+                                                thoayeucau = false;
+                                                tgxuatphatThaydoi = thoigianxecho - Thoigianxechotoida;
+                                            }
+                                        }
+                                        else if (gioxeden > max && tgxuatphatThaydoi > max - gioxeden)  // tìm thời gian lùi lớn nhất
+                                        {
+                                            thoayeucau = false;
+                                            tgxuatphatThaydoi = max - gioxeden;
+                                        }
+
+                                    }
+                                }
+                                if (!chapnhanthem)
+                                    break;
+                                copyOfChuyendi.dsDiem[j].thoigianxeden_luotve = gioxeden;
+                            }
+                            if (thoayeucau || !chapnhanthem)
+                                breakwhileloop = true;
+
+                            //k quan trọng
+                            //if (solankiemtra == 2 && chapnhanthem)
+                            //    copyOfChuyendi.dsDiem.Last().thoigianxeden_luotve = gio_doubleToString(Math.Round(gio_stringToDouble(copyOfChuyendi.dsDiem.Last().thoigianxeden_luotve) + xecho, 1)) ;
+                        }
+                    });
+
+                    List<Task> Tasks = new List<Task> { luotdi, luotve };
+                    //Task.WaitAll(Tasks.ToArray());
+                    Tasks[0].Wait();
+                    Tasks[1].Wait();
+
+                    if (!chapnhanthem)
                     {
                         continue;   //xét chuyến đi khác, nếu không có chuyến đi nào thỏa mãn thì nhảy đến (1)
                     }
@@ -1313,7 +1171,23 @@ namespace test_web.Helpers
                     double delta = (tongthoigian_sau - tongthoigian_truoc).TotalMinutes;
                     copyOfChuyendi.tongsonguoi += songuoidi;
                     //double tongthoigianlangphi = delta + tongthoigianduthuathem;
-                    dsChuyenDiThoaDk.Add(new { vitrichuyendi = index, xedi = xehientai, chuyendimoi = copyOfChuyendi, thoigianlangphi = delta });
+                    dsChuyenDiThoaDk.Add(new
+                    {
+                        vitrichuyendi = index,
+                        xedi = xehientai,
+                        chuyendimoi = new ChuyenDi
+                        {
+                            dsDiem = new List<Point>(copyOfChuyendi.dsDiem.Count),
+                            tongsonguoi = copyOfChuyendi.tongsonguoi,
+                            xedi = copyOfChuyendi.xedi
+                        },
+                        thoigianlangphi = delta
+                    });
+
+                    copyOfChuyendi.dsDiem.ForEach((item) =>
+                    {
+                        dsChuyenDiThoaDk.Last().chuyendimoi.dsDiem.Add(new Point(item));
+                    });
                 }
                 if (dschuyendi.Count > 0 && dsChuyenDiThoaDk.Count > 0)
                 {
@@ -1343,12 +1217,17 @@ namespace test_web.Helpers
                         {
                             dschuyendi[dsChuyenDiThoaDk[i].vitrichuyendi] = new ChuyenDi
                             {
-                                dsDiem = new List<Point>(dsChuyenDiThoaDk[i].chuyendimoi.dsDiem),
+                                dsDiem = new List<Point>(dsChuyenDiThoaDk[i].chuyendimoi.dsDiem.Count),
                                 tongsonguoi = dsChuyenDiThoaDk[i].chuyendimoi.tongsonguoi,
                                 xedi = dsChuyenDiThoaDk[i].chuyendimoi.xedi
                             };
+                            dsChuyenDiThoaDk[i].chuyendimoi.dsDiem.ForEach((item) =>
+                            {
+                                dschuyendi[dsChuyenDiThoaDk[i].vitrichuyendi].dsDiem.Add(new Point(item));
+                            });
                             dsChuyenDiThoaDk[i].xedi.songuoihientai += songuoidi;
                             themchuyendithanhcong = true;
+                            break;
                         }
                     }
                 }
@@ -1363,70 +1242,35 @@ namespace test_web.Helpers
                         tongsonguoi = songuoidi,
                         xedi = xedi
                     });
-                    double giodi = (double)(duration_in_traffic_matrix[OriginID][DestinationID]) / 60;
+                    double giodi = (double)(duration_in_traffic_matrix[OriginID][DestinationID]) / 60;   // tổng phút
                     dschuyendi[dschuyendi.Count - 1].dsDiem[1].thoigianxeden_luotdi = desPoint.dsdiemcungtoado[0].khungthoigianden[1];
                     dschuyendi[dschuyendi.Count - 1].dsDiem[0].thoigianxeden_luotdi = desPoint.dsdiemcungtoado[0].khungthoigianden[1].Add(TimeSpan.FromMinutes(-giodi));
 
                     dschuyendi[dschuyendi.Count - 1].dsDiem[1].thoigianxeden_luotve = desPoint.dsdiemcungtoado[0].khungthoigianve[0];
                     dschuyendi[dschuyendi.Count - 1].dsDiem[0].thoigianxeden_luotve = desPoint.dsdiemcungtoado[0].khungthoigianve[0].Add(TimeSpan.FromMinutes(giodi));
                 }
-
-                for (int i = 0; i < dschuyendi[0].dsDiem.Count; i++)
-                {
-                    Console.WriteLine(dschuyendi[0].dsDiem[i].thoigianxeden_luotve);
-                }
             }
 
-            DateTime GetDateTime(string datetime)
-            {
-                string[] Y_M_D = { "", "", "" };
-                int YYYY, MM, DD;
+            //double gio_stringToDouble(TimeSpan gio)
+            //{
+            //    var hh = gio.Hours;
+            //    var mm = gio.Minutes;
 
-                char[] charArray = datetime.ToCharArray();
-                var k = 0;
-                for (var i = 0; i < charArray.Length; i++)
-                {
-                    if (k == 3)
-                        break;
+            //    return hh + (double)mm / 60;
+            //}
 
-                    if (Char.IsDigit(charArray[i]))
-                        Y_M_D[k] += charArray[i];
-                    else
-                        k++;
-                }
-                bool YYYYsuccess = Int32.TryParse(Y_M_D[0], out YYYY);
-                bool MMsuccess = Int32.TryParse(Y_M_D[1], out MM);
-                bool DDsuccess = Int32.TryParse(Y_M_D[2], out DD);
-                if (!YYYYsuccess)
-                    throw new Exception("Attempted conversion of " + Y_M_D[0] + " failed");
-                if (!MMsuccess)
-                    throw new Exception("Attempted conversion of " + Y_M_D[1] + " failed");
-                if (!DDsuccess)
-                    throw new Exception("Attempted conversion of " + Y_M_D[2] + " failed");
+            //string gio_doubleToString(double gio)
+            //{
+            //    int hh = (Int32)gio;
+            //    int mm = (Int32)Math.Round((gio - hh) * 60);
+            //    if (mm == 60)
+            //    {
+            //        hh++;
+            //        mm = 0;
+            //    }
 
-                return new DateTime(YYYY, MM, DD);
-            }
-
-            double gio_stringToDouble(TimeSpan gio)
-            {
-                var hh = gio.Hours;
-                var mm = gio.Minutes;
-
-                return hh + (double)mm / 60;
-            }
-
-            string gio_doubleToString(double gio)
-            {
-                int hh = (Int32)gio;
-                int mm = (Int32)Math.Round((gio - hh) * 60);
-                if (mm == 60)
-                {
-                    hh++;
-                    mm = 0;
-                }
-
-                return hh.ToString().PadLeft(2, '0') + ":" + mm.ToString().PadLeft(2, '0');
-            }
+            //    return hh.ToString().PadLeft(2, '0') + ":" + mm.ToString().PadLeft(2, '0');
+            //}
 
             TimeSpan[][] laykhungthoigian(TimeSpan gioden, TimeSpan giove, double thoigiandi)
             {
