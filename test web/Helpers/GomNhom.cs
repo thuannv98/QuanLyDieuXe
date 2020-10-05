@@ -461,7 +461,7 @@ namespace test_web.Helpers
             var elapsedMss = watchh.Elapsed;
             Console.WriteLine("Tổng thời gian thực hiện thuật toán: {0} (s)", elapsedMss.TotalSeconds);
 
-            double total = 0;
+            //double total = 0;
 
             //foreach (var chuyenDi in DsChuyenDi)
             //{
@@ -649,14 +649,6 @@ namespace test_web.Helpers
                     return true;
             }
 
-            int TimGocLonNhat(Coordinate p1, Coordinate p2, Coordinate p3)
-            {
-                double goc1 = MapFunction.timgoc(MapFunction.layVector(p1, p2), MapFunction.layVector(p1, p3));
-                double goc2 = MapFunction.timgoc(MapFunction.layVector(p2, p1), MapFunction.layVector(p2, p3));
-                double goc3 = MapFunction.timgoc(MapFunction.layVector(p3, p1), MapFunction.layVector(p3, p2));
-                return goc1 >= goc2 ? (goc1 >= goc3 ? 1 : 3) : (goc2 >= goc3 ? 2 : 3);
-            }
-
             double[] CoordinatesToArray(string coor)
             {
                 string[] result = { "", "" };
@@ -763,15 +755,6 @@ namespace test_web.Helpers
 
                 for (int index = 0; index < dschuyendi.Count; index++)    ////xét từng chuyến đi
                 {
-                    Console.WriteLine("chuyến: " + index);
-                    //if (index == 3)
-                    //{
-                    //    var a = "DSAS";
-                    //}
-                    //if (DestinationID == 17 && index == 1)
-                    //    break;
-                    //if (DestinationID == 23 && index == 0)
-                    //{ var a = 0; }
                     ChuyenDi chuyendi = dschuyendi[index];
                     Xe_v2 xehientai = null;
                     foreach (var xe in dsXe)
@@ -986,12 +969,12 @@ namespace test_web.Helpers
                                         if (j + 1 == vitriDesTrongChuyenDi && !DaCoToaDoDestination)
                                         {
                                             gioxeden = copyOfChuyendi.dsDiem[j + 2].thoigianxeden_luotdi;
-                                            gioxeden = gioxeden.Add(TimeSpan.FromMinutes(-((double)duration_in_traffic_matrix[id0][id1] + (double)duration_in_traffic_matrix[id1][id2]) / 60 ));
+                                            gioxeden += TimeSpan.FromSeconds(-duration_in_traffic_matrix[id0][id1] - duration_in_traffic_matrix[id1][id2]);
                                         }
                                         else
                                         {
                                             gioxeden = copyOfChuyendi.dsDiem[j + 1].thoigianxeden_luotdi;
-                                            gioxeden = gioxeden.Add(TimeSpan.FromMinutes(-(double)duration_in_traffic_matrix[id0][id1] / 60));
+                                            gioxeden += TimeSpan.FromSeconds(-duration_in_traffic_matrix[id0][id1]);
                                         }
                                     }
                                     else
@@ -999,14 +982,14 @@ namespace test_web.Helpers
                                         gioxeden = copyOfChuyendi.dsDiem[0].thoigianxeden_luotdi;
                                     }
                                     if (solankiemtra == 2)
-                                        gioxeden.Add(tgxuatphatThaydoi1);
+                                        gioxeden += tgxuatphatThaydoi1;
                                 }
                                 else
                                 {
                                     var id_truoc = copyOfChuyendi.dsDiem[j - 1].dsdiemcungtoado[0].id;
                                     var id = copyOfChuyendi.dsDiem[j].dsdiemcungtoado[0].id;
                                     gioxeden = copyOfChuyendi.dsDiem[j - 1].thoigianxeden_luotdi;
-                                    gioxeden = gioxeden.Add(TimeSpan.FromMinutes((double)duration_in_traffic_matrix[id_truoc][id] / 60));
+                                    gioxeden += TimeSpan.FromSeconds(duration_in_traffic_matrix[id_truoc][id]);
                                 }
                                 //gioxeden = Math.Round(gioxeden, 1);
                                 copyOfChuyendi.dsDiem[j].thoigianxeden_luotdi = gioxeden;
@@ -1072,12 +1055,12 @@ namespace test_web.Helpers
                                         if (j - 1 == vitriOrgTrongChuyenDi && !DaCoToaDoOrigin)
                                         {
                                             gioxeden = copyOfChuyendi.dsDiem[j - 2].thoigianxeden_luotve;
-                                            gioxeden = gioxeden.Add(TimeSpan.FromMinutes(-((double)duration_in_traffic_matrix[id0][id1] + (double)duration_in_traffic_matrix[id1][id2]) / 60));
+                                            gioxeden += TimeSpan.FromSeconds(-duration_in_traffic_matrix[id0][id1] - duration_in_traffic_matrix[id1][id2]);
                                         }
                                         else
                                         {
                                             gioxeden = copyOfChuyendi.dsDiem[j - 1].thoigianxeden_luotve;
-                                            gioxeden = gioxeden.Add(TimeSpan.FromMinutes(-(double)duration_in_traffic_matrix[id0][id1] / 60));
+                                            gioxeden += TimeSpan.FromSeconds(-duration_in_traffic_matrix[id0][id1]);
                                         }
                                     }
                                     else
@@ -1092,8 +1075,8 @@ namespace test_web.Helpers
                                     var id_truoc = copyOfChuyendi.dsDiem[j + 1].dsdiemcungtoado[0].id;
                                     var id = copyOfChuyendi.dsDiem[j].dsdiemcungtoado[0].id;
                                     gioxeden = copyOfChuyendi.dsDiem[j + 1].thoigianxeden_luotve;
-                                    gioxeden = gioxeden.Add(thoigianxecho);
-                                    gioxeden = gioxeden.Add(TimeSpan.FromMinutes((double)duration_in_traffic_matrix[id_truoc][id] / 60));
+                                    gioxeden += thoigianxecho;
+                                    gioxeden += TimeSpan.FromSeconds(duration_in_traffic_matrix[id_truoc][id]);
 
                                     thoigianxecho = new TimeSpan(0);
                                 }
@@ -1145,9 +1128,7 @@ namespace test_web.Helpers
                     });
 
                     List<Task> Tasks = new List<Task> { luotdi, luotve };
-                    //Task.WaitAll(Tasks.ToArray());
-                    Tasks[0].Wait();
-                    Tasks[1].Wait();
+                    Task.WaitAll(Tasks.ToArray());
 
                     if (!chapnhanthem)
                     {
@@ -1210,6 +1191,10 @@ namespace test_web.Helpers
                                 tongsonguoi = dsChuyenDiThoaDk[i].chuyendimoi.tongsonguoi,
                                 xedi = xe
                             };
+                            dsChuyenDiThoaDk[i].chuyendimoi.dsDiem.ForEach((item) =>
+                            {
+                                dschuyendi[dsChuyenDiThoaDk[i].vitrichuyendi].dsDiem.Add(new Point(item));
+                            });
                             themchuyendithanhcong = true;
                             break;
                         }
